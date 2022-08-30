@@ -1,12 +1,12 @@
 const { Schema, model } = require('mongoose')
 
-const commentSchema = new Schema({
+const replySchema = new Schema({
 	user:{
 		type:Schema.Types.ObjectId,
 		ref:"User",
 		required:true,
 	},
-	body:{
+		body:{
 		type:String,
 		required:true,
 		trim:true,
@@ -23,18 +23,10 @@ const commentSchema = new Schema({
 			ref:"User",
 		}
 		],
-	replies:[
-		{
-			type:Schema.Types.ObjectId,
-			ref:'User',
-		}
-		
-		]
 	
 	
-},{timestamps:true})
+},{timeStamps:true})
 
+const Replies = new model('replie', replySchema)
 
-const Comment = new model('Comment', commentSchema)
-
-module.exports = Comment
+module.exports = Replies
