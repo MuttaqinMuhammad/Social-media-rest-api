@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=production node app.js"
+    "start": "NODE_ENV=production node server.js"
   },
-  "author": "Muttaqin-Muhammad",
+  "author": "Muttaqin Muhammad",
   "license": "ISC",
   "dependencies": {
     "colors": "^1.4.0",

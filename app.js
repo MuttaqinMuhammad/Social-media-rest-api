@@ -14,7 +14,7 @@ const middlewares = [
 	express.json(),
 	morgan('dev'),
 	express.urlencoded({extended:true}),
-	cookieParser(),
+	cookieParser(process.env.COOKIE_SECRET_KEY),
 ]
 app.use(middlewares)
 

@@ -4,30 +4,32 @@ const userSchema = new Schema({
 	name:{
 		type:String,
 		required:true,
-		trim:true(),
+		trim:true,
 	},
 	
 	email:{
 		type:String,
 		required:true,
 		trim:true,
+	  lowercase:true
 	},
 	
 	password:{
 		type:String,
 		required:true,
-		// select:false,
+		select:false,
 		trim:true,
 	},
 	
 	birthday:{
-		type:Date,
+		type:String,
 		required:true,
 	},
 	
 	gender:{
 		type:String,
 		enum:['male', 'female', 'custom'],
+		default:'male',
 		required:true,
 	},
 	
@@ -40,3 +42,5 @@ const userSchema = new Schema({
 },{timestamps:true})
 
 const User = new model('User', userSchema)
+
+module.exports = User
