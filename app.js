@@ -1,25 +1,29 @@
 //external import
 const express = require('express')
-const cookieParser = require('cookie-parser')
 const dotenv = require('dotenv')
-const morgan = require('morgan')
-// internal imports
-const userRoute = require('./routes/userRoute')
+const colors = require('colors/safe')
 
 const app = express()
 dotenv.config()
 
 
-const middlewares = [
-	express.json(),
-	morgan('dev'),
-	express.urlencoded({extended:true}),
-	cookieParser(process.env.COOKIE_SECRET_KEY),
-]
+// internal imports
+const userRoute = require('./routes/userRoute')
+const errorhandlers = require('./middlewares/common/errorHandler')
+const middlewares = require('./middlewares/middlewares')
+
+
+//using middlewares from ./middlewares/middlewares
 app.use(middlewares)
 
+
+// routes
 app.use('/user', userRoute)
 
+
+
+//using error handleling middlewares
+app.use(errorhandlers)
 
 
 
