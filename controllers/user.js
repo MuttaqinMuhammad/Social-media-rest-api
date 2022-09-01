@@ -14,7 +14,6 @@ const signup = async(req, res, next)=> {
 		birthday,
 		gender,
 	} = req.body
-	console.log(req.body)
 	const user = new User({
 		name,
 		email,
@@ -30,7 +29,7 @@ const signup = async(req, res, next)=> {
 			newUser,
 		})
 	} catch (e) {
-		console.log(e)
+
 		next(e)
 	}
 
@@ -38,6 +37,8 @@ const signup = async(req, res, next)=> {
 }
 
 const login = async (req, res, next)=> {
+	try {
+		
 	const {
 		email,
 		password
@@ -69,6 +70,10 @@ const login = async (req, res, next)=> {
 		}
 	}
 
+
+	} catch (e) {
+		next(e)
+	}
 }
 
 const logout = async (req, res, next)=>{

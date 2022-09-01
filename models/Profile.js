@@ -17,6 +17,7 @@ const profileSchema = new Schema({
 	avatar:{
 		type:String,
 		trim:true,
+		default:'uploads/defaults/nophoto.png',
 	},
 	nickname:String,
   bio:{
@@ -73,4 +74,4 @@ const profileSchema = new Schema({
 
 const Profile = new model('Profile', profileSchema)
 
-module.exposts = Profile
+module.exports = Profile

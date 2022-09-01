@@ -1,3 +1,6 @@
+const colors = require('colors/safe')
+
+
 const errorHandler = (err, req, res, next)=>{
 	if(res.headerSent){
 		console.log(colors.bold.rainbow('headers already sent!'))
@@ -5,12 +8,14 @@ const errorHandler = (err, req, res, next)=>{
 	}
 	if(err.status === 404){
 		return res.status(404).json({
+			success:false,
 			error:'404 not found!'
 		})
 	}
 	
-	console.log(colors.inverse.bold.brightRed(err))
+	console.log(colors.bold.brightRed(err))
 	res.status(500).json({
+		success:false,
    error:'there was a server side error'
 	})
 }

@@ -5,6 +5,7 @@ const validationResult = require('../middlewares/common/validationResult')
 
 // validators
 const signupvalidator = require('../validators/user/signup')
+const loginvalidator = require('../validators/user/login')
 
 const {
 signup,	
@@ -13,7 +14,7 @@ logout,
 } = require('../controllers/user')
 
 router.post('/signup', signupvalidator, validationResult, signup)
-router.post('/login', login)
+router.post('/login',loginvalidator, validationResult, login)
 router.delete('/logout',auth, logout)
 
 module.exports = router 
