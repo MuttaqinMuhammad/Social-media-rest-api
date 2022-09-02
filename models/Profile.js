@@ -14,11 +14,11 @@ const profileSchema = new Schema({
 		required:true,
 		trim:true,
 	},
-	avatar:{
-		type:String,
-		trim:true,
-		default:'uploads/defaults/nophoto.png',
-	},
+	 avatar: {
+    public_id: String,
+    url: String,
+  },
+
 	nickname:String,
   bio:{
   	type:String,

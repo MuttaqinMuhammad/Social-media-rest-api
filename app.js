@@ -3,7 +3,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 
 const app = express()
-dotenv.config()
+dotenv.config({ path: "./config/.env" })
 
 
 // internal imports
@@ -15,7 +15,7 @@ const middlewares = require('./middlewares/middlewares')
 
 //using middlewares from ./middlewares/middlewares
 app.use(middlewares)
-
+app.set('view engine', 'ejs')
 
 // routes
 app.use('/user', userRoute)
