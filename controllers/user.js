@@ -67,6 +67,7 @@ const login = async (req, res, next)=> {
 				user,
 				token,
 			})
+			
 		}
 	}
 

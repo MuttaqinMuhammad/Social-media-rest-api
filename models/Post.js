@@ -5,7 +5,7 @@ const postSchema = new Schema({
 		ref:'User',
 		required:true,
 	},
-	title:{
+	caption:{
 		type:String,
 		required:true,
 		trim:true,
@@ -15,8 +15,9 @@ const postSchema = new Schema({
 		required:true,
 		trim:true,
 	},
-  attachments:{
-  	type:String,
+  image:{
+    public_id: String,
+    url: String,
   },
   comments:[
  {
