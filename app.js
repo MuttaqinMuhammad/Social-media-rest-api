@@ -5,13 +5,12 @@ const dotenv = require('dotenv')
 const app = express()
 dotenv.config({ path: "./config/.env" })
 
-
 // internal imports
 // routes
 const userRoute = require('./routes/userRoute')
 const profileRoute = require('./routes/profileRoute')
 const postRoute = require('./routes/postRoute')
-
+const commentRoute = require('./routes/commentRoute')
 //middlewares
 const errorhandlers = require('./middlewares/common/errorHandler')
 const middlewares = require('./middlewares/middlewares')
@@ -25,7 +24,7 @@ app.use(middlewares)
 app.use('/user', userRoute)
 app.use('/profile', profileRoute)
 app.use('/post', postRoute)
-
+app.use('/comment', commentRoute)
 
 //using error handleling middlewares
 app.use(errorhandlers)

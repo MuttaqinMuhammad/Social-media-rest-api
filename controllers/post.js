@@ -3,9 +3,12 @@ const Post = require('../models/Post')
 const cloudinary = require('../config/cloudinary')
 const Profile = require('../models/Profile')
 
+
+ 
+
+
 const createPost = async (req, res, next)=>{
 const { caption, body } = req.body
-console.log(req.body)
 const post = new Post({
 	user:req.user._id,
 	caption,
@@ -23,6 +26,8 @@ if(req.file){
 			public_id,
 		}
 	}
+
+
 
 const newPost =  await post.save()
 await Profile.updateOne({user:req.user._id}, {
@@ -42,8 +47,13 @@ await Profile.updateOne({user:req.user._id}, {
 
 }
 
+
+
+
 const editPost = async (req, res, next)=>{
-	const {postId} = req.params
+	const result = await cloudinary.uploader.upload(req.file.path);
+const {secure_url, public_id} = result
+  const {postId} = req.params
 	const {
 		caption,
 		body,
@@ -55,10 +65,21 @@ const editPost = async (req, res, next)=>{
 const verifyAuthor = await Post.findOne({_id:postId, user:req.user._id})
 
 if(verifyAuthor){
-			const post = await Post.updateOne({_id:postId}, {
+if (req.file) {
+
+if(verifyAuthor.image){
+ await cloudinary.uploader.destroy(verifyAuthor.image.public_id)
+}
+}
+
+  const post = await Post.updateOne({_id:postId}, {
 	$set:{
 		caption,
 		body,
+    image:{ 
+      url:secure_url,
+      public_id,
+    },
 	}		
 		})
 		res.status(200).json({
@@ -87,6 +108,8 @@ const deletePost = async (req, res, next)=>{
 }
 
 const like = async (req, res, next)=>{
+
+try{
 	const { postId }= req.params
 	const user = req.user._id
 	const post = await Post.findOne({_id:postId})
@@ -110,11 +133,18 @@ const like = async (req, res, next)=>{
 			}
 		})
 	}
-	
-	
+	res.status(200).json({
+		success:true
+		
+	})
+}catch(e){
+	next(e)
+}
 }
 
 const dislike = async (req, res, next)=>{
+try{
+
 	const { postId }= req.params
 	const user = req.user._id
 	const post = await Post.findOne({_id:postId})
@@ -138,9 +168,15 @@ const dislike = async (req, res, next)=>{
 			}
 		})
 	}
-	
-	
+	res.status(200).json({
+		success:true
+	})
+}catch(e){
+	next(e)
 }
+}
+
+
 
 
 module.exports = {

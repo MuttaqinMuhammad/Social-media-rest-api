@@ -2,6 +2,7 @@
 const User = require('../models/User')
 const hashedPassword = require('../helpers/hashPassword')
 
+
 //external import
 const jwt = require('jsonwebtoken')
 
@@ -66,8 +67,8 @@ const login = async (req, res, next)=> {
 				success: true,
 				user,
 				token,
-			})
-			
+			}) 
+
 		}
 	}
 

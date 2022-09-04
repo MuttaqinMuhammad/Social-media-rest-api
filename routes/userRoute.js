@@ -13,6 +13,10 @@ login,
 logout,
 } = require('../controllers/user')
 
+
+router.get('/login', (req, res, next) => {
+  res.render('loginm')
+})
 router.post('/signup', signupvalidator, validationResult, signup)
 router.post('/login',loginvalidator, validationResult, login)
 router.delete('/logout',auth, logout)
