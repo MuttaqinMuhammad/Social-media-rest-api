@@ -14,7 +14,7 @@ const {
 } = require('../controllers/post')
 
 
-
+ 
 router.post('/create',
 auth,
 upload.single('postImage'),
@@ -30,8 +30,8 @@ validationResult,
 editPost
 )
 router.post('/delete/:postId', auth,deletePost)
-router.post('/feedback/like/:postId', auth, like)
-router.post('/feedback/dislike/:postId', auth, dislike)
+router.post('/like/:postId', auth, like)
+router.post('/dislike/:postId', auth, dislike)
 
 
 module.exports = router

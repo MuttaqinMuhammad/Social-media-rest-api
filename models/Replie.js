@@ -2,30 +2,19 @@ const {
   Schema,
   model
 } = require('mongoose')
-const postSchema = new Schema({
+
+const replySchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
-  caption: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+
   body: {
     type: String,
     required: true,
     trim: true,
   },
-  image: {
-    public_id: String,
-    url: String,
-  },
-  comments: [{
-    type: Schema.Types.ObjectId,
-    ref: "Comment",
-  }],
   likes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -34,11 +23,12 @@ const postSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   }],
+
+
 }, {
-  timestamps: true
+  timeStamps: true
 })
 
+const Replies = new model('replie', replySchema)
 
-const Post = new model('Post', postSchema)
-
-module.exports = Post
+module.exports = Replies
