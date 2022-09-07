@@ -1,77 +1,71 @@
-const { Schema, model } = require('mongoose')
+const {
+  Schema,
+  model
+} = require('mongoose')
 
 
 const profileSchema = new Schema({
-	
-	user:{
-	type:Schema.Types.ObjectId,
-	required:true,
-	trim:true,
-	ref:"User",
-	},
-	name:{
-		type:String,
-		required:true,
-		trim:true,
-	},
-	 avatar: {
+
+  user: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  avatar: {
     public_id: String,
     url: String,
   },
 
-	nickname:String,
-  bio:{
-  	type:String,
+  nickname: String,
+  bio: {
+    type: String,
   },
-	address:{
-	country:String,
-	city:String,
-	zipcode:String,
-	homeAddress:String,
-	},
-	occupation:String,
-	worksAt:String,
-	joined:{
-		type:Date,
-		default:Date.now,
-	},
-  hobby:{
-  	type:Array,
+  address: {
+    country: String,
+    city: String,
+    zipcode: String,
+    homeAddress: String,
   },
-  friends:[
-  	{
-  		type:Schema.Types.ObjectId,
-  		ref:'User'
-  	}
-	],
-	followers:[
-		{
-  		type:Schema.Types.ObjectId,
-  		ref:'User'
-  	}
-		],
-	following:[
-		{
-  		type:Schema.Types.ObjectId,
-  		ref:'User'
-  	}
-		],
-  posts:[
-  	{
-  	type:Schema.Types.ObjectId,
-  	ref:'Post'
-  	}
-  	],
-  bookmarks:[
-  	{
-  	type:Schema.Types.ObjectId,
-  	ref:'Post'
-  	}
-  ]	
-	
-},
-{timestamps:true})
+  occupation: String,
+  worksAt: String,
+  joined: {
+    type: Date,
+    default: Date.now,
+    },
+    hobby: {
+      type: Array,
+    },
+    friends: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    followers: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    following: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    posts: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Post'
+    }],
+    bookmarks: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Post'
+    }]
 
-const Profile = new model('Profile', profileSchema)
+  },
+  {
+    timestamps: true
+  })
 
-module.exports = Profile
+  const Profile = new model('Profile', profileSchema)
+
+  module.exports = Profile

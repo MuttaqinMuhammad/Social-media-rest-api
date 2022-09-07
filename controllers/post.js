@@ -1,8 +1,9 @@
 // internal import
 const Post = require('../models/Post')
+const Comment = require('../models/Comment')
 const cloudinary = require('../config/cloudinary')
 const Profile = require('../models/Profile')
-
+const Reply = require('../models/Replie')
 
 
 
@@ -114,11 +115,12 @@ const deletePost = async (req, res, next)=> {
     postId
   } = req.params
   try {
+    const post = await Post.findOne({
+      _id: postId
+    })
+
     await Post.deleteOne({
       _id: postId, user: req.user._id
-    })
-    res.status(200).json({
-      success: true
     })
 
     await Profile.UpdateOne({
@@ -128,6 +130,31 @@ const deletePost = async (req, res, next)=> {
         posts: postId
       }
     })
+  
+    if (post.comments.length > 0) {
+      const comments = post.comments
+      comments.forEach(async commentId=> {
+        const singleComment = await Comments.findOne({
+          _id: commentId
+        })
+
+        if (singleComment.replies.length > 0) {
+          const replies = singleComment.replies
+          replies.forEach(async replyId=> {
+            await Reply.deleteOne({
+              _id: replyId
+            })
+          })
+        }
+
+        await Comment.deleteOne({
+          _id: commentId
+        })
+      })
+
+    }
+
+
     res.status(200).json({
       success: true
     })
@@ -164,9 +191,9 @@ const like = async (req, res, next)=> {
           "likes": user
         }
       })
-      
+
       return res.status(200).json({
-        success:true
+        success: true
       })
     }
 
@@ -215,7 +242,7 @@ const dislike = async (req, res, next)=> {
         }
       })
 
-     return res.status(200).json({
+      return res.status(200).json({
         success: true
       })
 

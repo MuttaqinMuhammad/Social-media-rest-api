@@ -12,6 +12,7 @@ const commentSchema = new Schema({
   postId: {
     type: Schema.Types.ObjectId,
     ref: 'Post',
+    required:true,
   },
   body: {
     type: String,
@@ -21,14 +22,17 @@ const commentSchema = new Schema({
   likes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
+    required:true,
   }],
   dislikes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
+    required:true,
   }],
   replies: [{
     type: Schema.Types.ObjectId,
     ref: 'User',
+    required:true,
   }]
 
 

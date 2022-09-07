@@ -9,6 +9,11 @@ const replySchema = new Schema({
     ref: "User",
     required: true,
   },
+  commentId:{
+    type:Schema.Types.ObjectId,
+    required:true,
+    ref:"Comment"
+  },
 
   body: {
     type: String,

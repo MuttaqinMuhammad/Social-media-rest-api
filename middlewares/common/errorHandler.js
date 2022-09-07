@@ -16,7 +16,7 @@ const errorHandler = (err, req, res, next)=>{
 	console.log(colors.bold.brightRed(err))
 	res.status(500).json({
 		success:false,
-   error:'there was a server side error'
+   error:err.message
 	})
 }
 

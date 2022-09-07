@@ -8,6 +8,7 @@ const createReply = async (req, res, next)=> {
   const reply = new Reply({
     body: req.body.body,
     user: req.user._id,
+    commentId,
   })
 
   try {
@@ -29,6 +30,169 @@ const createReply = async (req, res, next)=> {
 }
 
 
+const editReply = async (req, res, next)=> {
+  try {
+
+    const {
+      replyId
+    } = req.params
+    const user = req.user._id
+    const reply = await Reply.findOne({
+      replyId
+    })
+    await Reply.updateOne({
+      _id: replyId, user
+    }, {
+      $set: {
+        body: req.body.body
+      }
+    })
+
+    res.status(200).json({
+      success: true
+    })
+
+  }catch(error) {
+    error.message = "only comment createor can edit his comment"
+    next(error)
+  }
+}
+
+const deleteReply = async (req, res, next)=> {
+  const user = req.user._id
+  try {
+
+    const {
+      replyId
+    } = req.params
+    const reply = await Reply.findOne({
+      _id: replyId, user
+    })
+    await Reply.deleteOne({
+      _id: replyId, user
+    })
+    await Comment.updateOne({
+      _id: reply.commentId,
+    }, {
+      $pull: {
+        "replies": reply._id
+      }
+    })
+    res.status(200).json({
+      success: true
+    })
+  }catch(error) {
+
+    next(error)
+  }
+
+}
+
+
+const like = async (req, res, next)=> {
+
+  try {
+    const {
+      replyId
+    } = req.params
+    const user = req.user._id
+    const reply = await Reply.findOne({
+      _id: replyId
+    })
+
+    if (reply.dislikes.includes(user)) {
+      await Reply.updateOne({
+        _id: replyId,
+      }, {
+        $pull: {
+          "dislikes": user
+        }
+      })
+    } else if (reply.likes.includes(user)) {
+      await Reply.updateOne({
+        _id: replyId,
+      }, {
+        $pull: {
+          "likes": user
+        }
+      })
+
+      return res.status(200).json({
+        success: true
+      })
+    }
+
+    await Reply.updateOne({
+      _id: replyId,
+    }, {
+      $push: {
+        "likes": user
+      }
+    })
+
+    res.status(200).json({
+      success: true
+
+    })
+  }catch(e) {
+    next(e)
+  }
+}
+
+const dislike = async (req, res, next)=> {
+  try {
+
+    const {
+      replyId
+    } = req.params
+    const user = req.user._id
+    const reply = await Reply.findOne({
+      _id: replyId
+    })
+
+    if (reply.likes.includes(user)) {
+      await Reply.updateOne({
+        _id: replyId,
+      }, {
+        $pull: {
+          "likes": user
+        }
+      })
+    } else if (reply.dislikes.includes(user)) {
+      await Reply.updateOne({
+        _id: replyId,
+      }, {
+        $pull: {
+          "dislikes": user
+        }
+      })
+
+      return res.status(200).json({
+        success: true
+      })
+
+    }
+
+    await Reply.updateOne({
+      _id: replyId,
+    }, {
+      $push: {
+        "dislikes": user
+      }
+    })
+
+    res.status(200).json({
+      success: true
+    })
+  }catch(e) {
+    next(e)
+  }
+}
+
 module.exports = {
   createReply,
+  editReply,
+  deleteReply,
+  like,
+  dislike,
 }

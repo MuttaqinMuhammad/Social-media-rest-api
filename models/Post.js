@@ -25,14 +25,17 @@ const postSchema = new Schema({
   comments: [{
     type: Schema.Types.ObjectId,
     ref: "Comment",
+    required:true,
   }],
   likes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
+    required:true,
   }],
   dislikes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
+    required:true,
   }],
 }, {
   timestamps: true
