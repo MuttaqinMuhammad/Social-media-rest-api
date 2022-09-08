@@ -2,4 +2,3 @@ node_modules
 .env
 plans.txt
 views
-test.js

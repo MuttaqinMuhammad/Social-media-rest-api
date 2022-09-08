@@ -1,3 +1,6 @@
+const Comment = require('./Comment')
+const Reply = require('./Replie')
+
 const {
   Schema,
   model
@@ -25,23 +28,54 @@ const postSchema = new Schema({
   comments: [{
     type: Schema.Types.ObjectId,
     ref: "Comment",
-    required:true,
+    required: true,
   }],
   likes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
-    required:true,
+    required: true,
   }],
   dislikes: [{
     type: Schema.Types.ObjectId,
     ref: "User",
-    required:true,
+    required: true,
   }],
 }, {
   timestamps: true
 })
 
+postSchema.statics = {
+  removeChilds: async function(post) {
+    const comments = post.comments && post.comments.length > 0 ? post.comments: null;
+    if (comments) {
+      comments.forEach(async commentId=> {
+        const singleComment = await Comment.findOne({
+          _id: commentId
+        })
 
+
+        const replies = singleComment.replies && singleComment.replies.length > 0 ? singleComment.replies: null;
+
+        if (replies) {
+          replies.forEach(async replyId=> {
+            await Reply.deleteOne({
+              _id: replyId
+            })
+          })
+        }
+
+        await Comment.deleteOne({
+          _id: commentId
+        })
+      })
+
+    }
+
+
+
+
+  }
+}
 const Post = new model('Post', postSchema)
 
 module.exports = Post
