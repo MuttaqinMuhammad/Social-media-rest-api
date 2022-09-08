@@ -69,12 +69,27 @@ const deleteComment = async (req, res, next)=> {
   } = req.params
 
   try {
-    await Comment.deleteOne({
-      _id: commentId, user: req.user._id
+    const comment = await Comment.findOne({
+      _id: commentId
     })
-    res.status(200).json({
-      success: true
-    })
+    if (comment) {
+      await Comment.deleteOne({
+        _id: commentId, user: req.user._id
+      })
+      await Post.updateOne({
+        _id: comment.postId
+      }, {
+        $pull: {
+          'comments': comment._id
+        }
+      })
+
+      res.status(200).json({
+        success: true
+      })
+    }
+    
+  throw  new Error('no comment found')
   } catch (e) {
     next(e)
   }

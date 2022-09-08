@@ -54,7 +54,8 @@ const profileSchema = new Schema({
     }],
     posts: [{
       type: Schema.Types.ObjectId,
-      ref: 'Post'
+      ref: 'Post',
+      required:true
     }],
     bookmarks: [{
       type: Schema.Types.ObjectId,

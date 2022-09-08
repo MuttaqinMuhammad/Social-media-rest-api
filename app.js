@@ -14,6 +14,8 @@ const profileRoute = require('./routes/profileRoute')
 const postRoute = require('./routes/postRoute')
 const commentRoute = require('./routes/commentRoute')
 const replyRoute = require('./routes/replyRoute')
+//must remove
+const testRoute = require('./test')
 //middlewares
 const errorhandlers = require('./middlewares/common/errorHandler')
 const middlewares = require('./middlewares/middlewares')
@@ -29,6 +31,7 @@ app.use('/profile', profileRoute)
 app.use('/post', postRoute)
 app.use('/comment', commentRoute)
 app.use('/reply', replyRoute)
+app.use('test', testRoute)
 //using error handleling middlewares
 app.use(errorhandlers)
 

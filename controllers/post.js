@@ -119,27 +119,35 @@ const deletePost = async (req, res, next)=> {
       _id: postId
     })
 
+    const comments = post.comments && post.comments.length > 0 ? post.comments: null;
+   
+
     await Post.deleteOne({
-      _id: postId, user: req.user._id
+      _id: postId,
+      user: req.user._id
     })
 
-    await Profile.UpdateOne({
+    await Profile.updateOne({
       user: req.user._id
-    }, {
-      $pull: {
-        posts: postId
-      }
-    })
-  
-    if (post.comments.length > 0) {
-      const comments = post.comments
+    },
+      {
+        $pull: {
+          posts: postId
+        }
+      })
+
+
+
+    if (comments) {
       comments.forEach(async commentId=> {
-        const singleComment = await Comments.findOne({
+        const singleComment = await Comment.findOne({
           _id: commentId
         })
 
-        if (singleComment.replies.length > 0) {
-          const replies = singleComment.replies
+        
+ const replies = singleComment.replies && singleComment.replies.length > 0 ? singleComment.replies: null;
+
+        if (replies) {
           replies.forEach(async replyId=> {
             await Reply.deleteOne({
               _id: replyId
@@ -153,6 +161,7 @@ const deletePost = async (req, res, next)=> {
       })
 
     }
+
 
 
     res.status(200).json({

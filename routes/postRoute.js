@@ -29,7 +29,7 @@ postValidator,
 validationResult,
 editPost
 )
-router.post('/delete/:postId', auth,deletePost)
+router.delete('/delete/:postId', auth,deletePost)
 router.post('/like/:postId', auth, like)
 router.post('/dislike/:postId', auth, dislike)
 
