@@ -1,6 +1,6 @@
 const Comment = require('../models/Comment')
 const Post = require('../models/Post')
-
+const Reply = require('../models/Replie')
 
 const createComment = async(req, res, next)=> {
   const {
@@ -35,8 +35,7 @@ const editComment = async (req, res, next)=> {
     commentId
   } = req.params
   const user = req.user._id
-  console.log(req.body)
-  console.log(req.user)
+
   try {
     const comment = await Comment.findOne({
       _id: commentId, user
@@ -70,7 +69,7 @@ const deleteComment = async (req, res, next)=> {
 
   try {
     const comment = await Comment.findOne({
-      _id: commentId
+      _id: commentId, user:req.user._id
     })
     if (comment) {
       await Comment.deleteOne({
@@ -82,7 +81,10 @@ const deleteComment = async (req, res, next)=> {
         $pull: {
           'comments': comment._id
         }
+        
       })
+      await Reply.deleteMany({_id:{'$in':comment.replies}})
+
 
       res.status(200).json({
         success: true
@@ -141,8 +143,10 @@ const like = async (req, res, next)=> {
       success: true
 
     })
-  }catch(e) {
-    next(e)
+  }catch{
+    const error = new Error()
+    error.message = "there was a server side error"
+    next(error)
   }
 }
 
@@ -191,9 +195,10 @@ const dislike = async (req, res, next)=> {
     res.status(200).json({
       success: true
     })
-  }catch(e) {
-    next(e)
-  }
+  }catch{    
+    const error = new Error()
+    error.message = "there was a server side error"
+    next(error)}
 }
 
 

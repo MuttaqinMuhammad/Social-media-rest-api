@@ -23,3 +23,5 @@ const otpSchema = new Schema({
 const Otp = new model('otp',otpSchema)
 
 module.exports = Otp;
+
+

@@ -1,7 +1,11 @@
 // internal import
 const User = require('../models/User')
-const hashedPassword = require('../helpers/hashPassword')
+const hashedPassword = require('../helpers/user/hashPassword')
 
+//otp
+const sendMail = require('../helpers/sendMail')
+const otpGenerator = require('../helpers/user/otpGenerator')
+const OTP = require('../models/OTP')
 
 //external import
 const jwt = require('jsonwebtoken')
@@ -87,6 +91,40 @@ const logout = async (req, res, next)=>{
 }
 
 
+//experiment
+const sendOtp = async (req, res, next)=>{
+  const {email} = req.body
+const user = await User.findOne({_id:email})
+
+if(user){
+  const randomOTP = otpGenerator(6)
+  const otp = new OTP({
+    email,
+    otp:randomOTP,
+  }) 
+  try {
+    await otp.save()
+  const sendMailToUser = sendMail(`your ${process.env.APP_NAME} OTP `,`Here is your OTP:${randomOTP} for the response your forget password request.
+  please dont share this to anyone . this token will be expired in  munites.`,email)  
+
+  } catch (e) {
+    next(e)
+  }
+
+}else{
+  res.status(500).json({
+    success:false,
+    message:"no user found",
+  })
+}
+
+res.status(200).json({
+  success:true,
+  message:"an otp has been sended to your email"
+})
+  
+
+}
 
 
 

@@ -132,8 +132,6 @@ const editProfile = async (req, res, next)=> {
         worksAt,
         hobby,
       }
-    }, {
-      new: true
     })
     await User.updateOne({
       _id: req.user._id

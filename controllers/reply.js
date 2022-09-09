@@ -12,6 +12,8 @@ const createReply = async (req, res, next)=> {
   })
 
   try {
+    const comment = await Comment.findOne({_id:commentId})
+    
     const userReply = await reply.save()
     await Comment.updateOne({
       _id: commentId
@@ -24,8 +26,9 @@ const createReply = async (req, res, next)=> {
       success: true,
       userReply,
     })
-  } catch (e) {
-    next(e)
+  } catch{
+    const error = new Error('no comment found')
+    next(error)
   }
 }
 
@@ -81,8 +84,8 @@ const deleteReply = async (req, res, next)=> {
     res.status(200).json({
       success: true
     })
-  }catch(error) {
-
+  }catch{
+  const error = new Error('there was a server side error')
     next(error)
   }
 
@@ -134,8 +137,9 @@ const like = async (req, res, next)=> {
       success: true
 
     })
-  }catch(e) {
-    next(e)
+  }catch{
+    const error = new Error('there was a server side error')
+    next(error)
   }
 }
 
@@ -184,9 +188,9 @@ const dislike = async (req, res, next)=> {
     res.status(200).json({
       success: true
     })
-  }catch(e) {
-    next(e)
-  }
+  }catch{   
+    const error = new Error('there was a server side error')
+    next(error)}
 }
 
 module.exports = {

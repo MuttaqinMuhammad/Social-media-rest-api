@@ -57,12 +57,8 @@ postSchema.statics = {
         const replies = singleComment.replies && singleComment.replies.length > 0 ? singleComment.replies: null;
 
         if (replies) {
-          replies.forEach(async replyId=> {
-            await Reply.deleteOne({
-              _id: replyId
-            })
-          })
-        }
+await Reply.deleteMany({_id:{'$in':replies}})
+}
 
         await Comment.deleteOne({
           _id: commentId

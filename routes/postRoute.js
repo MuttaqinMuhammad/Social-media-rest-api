@@ -6,15 +6,16 @@ const upload = require('../helpers/photoUploader')
 const postValidator = require('../validators/post/postValidator')
 const validationResult = require('../middlewares/common/validationResult')
 const {
-	createPost,
-	editPost,
-	deletePost,
-	like,
-	dislike,
+  getPost,
+  createPost,
+  editPost,
+  deletePost,
+  like,
+  dislike,
 } = require('../controllers/post')
 
 
- 
+router.get('/get/:postId', auth, getPost) 
 router.post('/create',
 auth,
 upload.single('postImage'),

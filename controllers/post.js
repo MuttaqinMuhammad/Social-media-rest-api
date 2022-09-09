@@ -8,6 +8,22 @@ const Reply = require('../models/Replie')
 
 
 
+const getPost = async (req, res, next)=>{
+const { postId } = req.params
+
+try {
+const post = await Post.findOne({_id:postId})
+res.status(200).json({
+ success:true,
+ post,
+})
+
+} catch (e) {
+next(e)  
+}
+  
+}
+
 const createPost = async (req, res, next)=> {
   const {
     caption,
@@ -53,15 +69,8 @@ const createPost = async (req, res, next)=> {
 
 }
 
-
-
-
 const editPost = async (req, res, next)=> {
-  const result = await cloudinary.uploader.upload(req.file.path);
-  const {
-    secure_url,
-    public_id
-  } = result
+  
   const {
     postId
   } = req.params
@@ -80,9 +89,24 @@ const editPost = async (req, res, next)=> {
     if (verifyAuthor) {
       if (req.file) {
 
-        if (verifyAuthor.image) {
-          await cloudinary.uploader.destroy(verifyAuthor.image.public_id)
+    if (verifyAuthor.image) {
+      await cloudinary.uploader.destroy(verifyAuthor.image.public_id)
+    }
+    const result = await cloudinary.uploader.upload(req.file.path);
+  
+      const {
+        secure_url,
+        public_id
+      } = result
+    await Post.updateOne({_id:postId}, {
+      $set:{
+        image:{
+        url:secure_url,
+        public_id,
         }
+      }
+    })  
+    
       }
 
       const post = await Post.updateOne({
@@ -91,17 +115,13 @@ const editPost = async (req, res, next)=> {
         $set: {
           caption,
           body,
-          image: {
-            url: secure_url,
-            public_id,
-          },
         }
       })
       res.status(200).json({
         success: true,
       })
 
-    } else {
+      } else {
       throw new Error('not found')
     }
   } catch (e) {
@@ -111,10 +131,10 @@ const editPost = async (req, res, next)=> {
 }
 
 const deletePost = async (req, res, next)=> {
+  try {
   const {
     postId
   } = req.params
-  try {
     const post = await Post.findOne({
       _id: postId
     })
@@ -139,8 +159,11 @@ const deletePost = async (req, res, next)=> {
       success: true
     })
 
-  } catch (e) {
-    next(e)
+  }catch{
+    const error = new Error()
+    error.message = "there was a server side error"
+    
+    next(error)
   }
 }
 
@@ -189,8 +212,10 @@ const like = async (req, res, next)=> {
       success: true
 
     })
-  }catch(e) {
-    next(e)
+  }catch{
+    const error = new Error()
+    error.message = "there was a server side error"
+    next(error)
   }
 }
 
@@ -239,15 +264,17 @@ const dislike = async (req, res, next)=> {
     res.status(200).json({
       success: true
     })
-  }catch(e) {
-    next(e)
-  }
+  }catch(e) {  
+    const error = new Error()
+    error.message = "there was a server side error"
+    next(error)}
 }
 
 
 
 
 module.exports = {
+  getPost,
   createPost,
   editPost,
   deletePost,

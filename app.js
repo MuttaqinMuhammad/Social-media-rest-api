@@ -7,6 +7,9 @@ dotenv.config({
   path: "./config/.env"
 })
 
+//background processing
+require('./helpers/backgroundProcess/checkExpiry')
+
 // internal imports
 // routes
 const userRoute = require('./routes/userRoute')
