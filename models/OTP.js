@@ -7,10 +7,9 @@ const otpSchema = new Schema({
 		required:true,
 		trim:true,
 	},
-	email:{
-		type:String,
+	user:{
+    type:Schema.Types.ObjectId,
 		required:true,
-		trim:true,
 },
   isValid:{
   	type:Boolean,

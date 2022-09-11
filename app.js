@@ -7,8 +7,7 @@ dotenv.config({
   path: "./config/.env"
 })
 
-//background processing
-require('./helpers/backgroundProcess/checkExpiry')
+
 
 // internal imports
 // routes
@@ -17,6 +16,8 @@ const profileRoute = require('./routes/profileRoute')
 const postRoute = require('./routes/postRoute')
 const commentRoute = require('./routes/commentRoute')
 const replyRoute = require('./routes/replyRoute')
+const securityRoute = require('./routes/securityRoute')
+
 
 //middlewares
 const errorhandlers = require('./middlewares/common/errorHandler')
@@ -33,6 +34,11 @@ app.use('/profile', profileRoute)
 app.use('/post', postRoute)
 app.use('/comment', commentRoute)
 app.use('/reply', replyRoute)
+app.use('/security', securityRoute)
+
+
+
+
 //using error handleling middlewares
 app.use(errorhandlers)
 

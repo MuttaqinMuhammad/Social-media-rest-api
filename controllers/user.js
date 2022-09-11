@@ -1,17 +1,14 @@
 // internal import
 const User = require('../models/User')
 const hashedPassword = require('../helpers/user/hashPassword')
-
-//otp
-const sendMail = require('../helpers/sendMail')
-const otpGenerator = require('../helpers/user/otpGenerator')
-const OTP = require('../models/OTP')
+const verifyPassword = require('../helpers/user/validatePassword')
 
 //external import
 const jwt = require('jsonwebtoken')
 
 
 const signup = async(req, res, next)=> {
+
 	const {
 		name,
 		email,
@@ -19,10 +16,13 @@ const signup = async(req, res, next)=> {
 		birthday,
 		gender,
 	} = req.body
+const {hash, salt} = hashedPassword(password)
+
 	const user = new User({
 		name,
 		email,
-		password: hashedPassword(password),
+		password:hash,
+		salt,
 		birthday,
 		gender,
 	})
@@ -52,9 +52,10 @@ const login = async (req, res, next)=> {
 	const user = await User.findOne({
 		email
 	}).select('+password')
-
+console.log(user)
 	if (user._id) {
-		const verify = user.password === hashedPassword(password);
+		const verify = user.password === verifyPassword(password, user.salt)  
+		console.log(verify)
 		if (verify) {
 			const token = jwt.sign({
 				userId: user._id
@@ -73,6 +74,8 @@ const login = async (req, res, next)=> {
 				token,
 			}) 
 
+		}else{
+		  throw new Error('Access denied!')
 		}
 	}
 
@@ -90,41 +93,6 @@ const logout = async (req, res, next)=>{
 	})
 }
 
-
-//experiment
-const sendOtp = async (req, res, next)=>{
-  const {email} = req.body
-const user = await User.findOne({_id:email})
-
-if(user){
-  const randomOTP = otpGenerator(6)
-  const otp = new OTP({
-    email,
-    otp:randomOTP,
-  }) 
-  try {
-    await otp.save()
-  const sendMailToUser = sendMail(`your ${process.env.APP_NAME} OTP `,`Here is your OTP:${randomOTP} for the response your forget password request.
-  please dont share this to anyone . this token will be expired in  munites.`,email)  
-
-  } catch (e) {
-    next(e)
-  }
-
-}else{
-  res.status(500).json({
-    success:false,
-    message:"no user found",
-  })
-}
-
-res.status(200).json({
-  success:true,
-  message:"an otp has been sended to your email"
-})
-  
-
-}
 
 
 
