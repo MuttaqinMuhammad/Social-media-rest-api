@@ -1,7 +1,8 @@
 // internal import
 const User = require('../models/User')
+const OTP = require('../models/OTP')
+
 const hashedPassword = require('../helpers/user/hashPassword')
-const verifyPassword = require('../helpers/user/validatePassword')
 
 //external import
 const jwt = require('jsonwebtoken')
@@ -16,13 +17,11 @@ const signup = async(req, res, next)=> {
 		birthday,
 		gender,
 	} = req.body
-const {hash, salt} = hashedPassword(password)
 
 	const user = new User({
 		name,
 		email,
-		password:hash,
-		salt,
+		password:hashedPassword(password),
 		birthday,
 		gender,
 	})
@@ -46,16 +45,15 @@ const login = async (req, res, next)=> {
 		
 	const {
 		email,
-		password
+		password,
 	} = req.body
 
 	const user = await User.findOne({
 		email
 	}).select('+password')
-console.log(user)
+
 	if (user._id) {
-		const verify = user.password === verifyPassword(password, user.salt)  
-		console.log(verify)
+const verify = user.password === hashedPassword(password)
 		if (verify) {
 			const token = jwt.sign({
 				userId: user._id
@@ -93,11 +91,42 @@ const logout = async (req, res, next)=>{
 	})
 }
 
+const changePasswordWithOtp = async(req, res, next)=>{
+const { password } =req.body
+ 
+const cookies = Object.keys(req.signedCookies).length > 0 ? req.signedCookies : false
+const cookie = cookies['validate-otp'] ? cookies['validate-otp'] : false
+try {
+  if(cookie) {
 
+  const {userId} =jwt.verify(cookie, process.env.JWT_SECRET_KEY)
+  const otp = await OTP.findOne({user:userId})
+  console.log(otp)
+  if(otp.isValid){
+     await User.updateOne({_id:userId}, {
+       $set:{
+         password:hashedPassword(password)
+       }
+     })
+      res.status(200).clearCookie("validate-otp").json({
+       success:true
+     })
+  }else{
+    throw new Error('authentication failure')
+  }
+  }else{
+    throw new Error('authentication failure')
+  }
+} catch (e) {
+  next(e)
+}  
+  
+}
 
 
 module.exports = {
 	signup,
 	login,
 	logout,
+	changePasswordWithOtp,
 }

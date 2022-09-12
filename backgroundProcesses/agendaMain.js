@@ -1,9 +1,10 @@
+
 const Agenda = require('agenda');
 
 //tasks
 const clearExpiredOtp = require('./tasks/clearExpiredOtp')
 
-
+  
 const agenda = new Agenda({
 db: { 
     address: process.env.MONGO_URI, 
@@ -12,7 +13,6 @@ db: {
     processEvery: "30 seconds",
     maxConcurrency: 20,
 })
-
 
 agenda
  .on('ready', () => console.log("Agenda started!"))

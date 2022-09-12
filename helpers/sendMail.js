@@ -1,9 +1,9 @@
 const nodemailer = require('nodemailer')
 
-module.exports =  (title, body, reciver)=>{
+module.exports =  ({title, body, emailReciever})=>{
 const msg = {
 	from:process.env.EMAIL_ID,
-	to:reciver,
+	to:emailReciever,
 	subject:title,
 	text:body,
 }

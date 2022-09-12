@@ -11,6 +11,7 @@ const sendOtp = async (req, res, next)=>{
 const user = await User.findOne({email})
 
 if(user){
+  await OTP.deleteOne({user:user._id})
   const randomOTP = otpGenerator(6)
   const otp = new OTP({
     user:user._id,
@@ -18,9 +19,13 @@ if(user){
   }) 
   try {
     await otp.save()
-    
-  // const sendMailToUser = sendMail(`your ${process.env.APP_NAME} OTP `,`Here is your OTP:${randomOTP} for the response your forget password request.
-  // please dont share this to anyone . this token will be expired in  munites.`,email)  
+const mailParam = {
+  title:`your ${process.env.APP_NAME} OTP `,
+  body:`Here is your OTP:${randomOTP} for the response your forget password request.
+  please dont share this to anyone . this token will be expired in  munites.`,
+  emailReciever:email,
+}
+  // const sendMailToUser = sendMail(mailParam)  
 const userData={
   userId:user._id,
   name:user.name,
@@ -28,14 +33,14 @@ const userData={
   avatar:user.avatar,
 }
 	const payload = jwt.sign(userData, process.env.JWT_SECRET_KEY, {
-				expiresIn:360000
+				expiresIn:1000*60*10
 			})
 //redirect validate otp
 res.status(200)
 .cookie('validate-otp', payload, {
 	httpOnly:true,
 	signed:true,
-	maxAge:360000,
+	maxAge:1000*60*60,
 })
 .json({
   success:true,
@@ -60,13 +65,12 @@ const validateOtp = async (req, res, next)=>{
 const otp = typeof(req.body.otp) === 'string' && req.body.otp.length === 6 ? req.body.otp : false
 const cookies = Object.keys(req.signedCookies).length > 0 ? req.signedCookies : false
 const cookie = cookies['validate-otp'] ? cookies['validate-otp'] : false
-  console.log(cookie)
 try{
 if (cookie && otp) {
   const decoded = jwt.verify(cookie, process.env.JWT_SECRET_KEY)  
 const { userId, name, avatar, email } = decoded
 const dataOtp = await OTP.findOne({user:userId})
-
+console.log(dataOtp.otp === otp)
 if(dataOtp.otp === otp){
      await OTP.updateOne({_id:dataOtp._id}, {
         $set:{

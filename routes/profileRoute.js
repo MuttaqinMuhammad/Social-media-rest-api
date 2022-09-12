@@ -9,6 +9,7 @@ const {
   getProfile,
   createProfile,
   editProfile,
+  follow,
 } = require('../controllers/profile')
 
 router.get('/', auth, getProfile)
@@ -26,5 +27,5 @@ router.post('/edit',
   profileValidator,
   validationResult,
   editProfile)
-
+router.get('/follow/:userId', auth, follow)
 module.exports = router

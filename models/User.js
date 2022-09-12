@@ -29,10 +29,6 @@ const userSchema = new Schema({
     select: false,
     trim: true,
   },
-  salt:{
-    type:String,
-    required:true,
-  },
   birthday: {
     type: String,
     required: true,
@@ -57,11 +53,6 @@ const userSchema = new Schema({
 
 
 
-// UserSchema.methods.validPassword = function(password) { 
-//     const hash = crypto.pbkdf2Sync(password,  
-//     this.salt, 1000, 64, `sha512`).toString(`hex`); 
-//     return this.hash === hash; 
-// }; 
 
   const User = new model('User', userSchema)
 

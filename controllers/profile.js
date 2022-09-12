@@ -60,11 +60,12 @@ const createProfile = async (req, res, next)=> {
   }
 
   try {
-    const profile = await Profile.findOne({
+    const isprofileExist = await Profile.findOne({
       user: req.user._id
     })
-    if (profile && profile._id)throw new Error('profile already exist!')
-
+    if (isprofileExist && isprofileExist._id) {
+      throw new Error('profile already exist!')
+}
 
     const createdProfile = await profile.save()
     await User.updateOne({
@@ -154,9 +155,49 @@ const editProfile = async (req, res, next)=> {
 
 }
 
+const follow = async (req, res, next)=>{
+const { userId } = req.params
+console.log(req.params)
+try {
+  if(req.user._id != userId){
+    const profile = await Profile.findOne({user:userId})
+    console.log(profile)
+    const loggedInUserProfile = await Profile.findOne({user:req.user._id})
+    console.log(loggedInUserProfile)
+    if(!profile && !loggedInUserProfile){
+      throw new Error('profile deesnt exist!')
+    }
+await Profile.updateOne({user:userId}, {
+  $push:{
+    'followers':req.user._id
+  }
+})
+await Profile.updateOne({user:req.user._id}, {
+  $push:{
+    'following':userId
+  }
+})
+  
+ return res.status(200).json({
+    success:true
+  })
+  }else{
+    throw new Error('user can not follow himself')
+  }
+  
+ 
+} catch (e) {
+  next(e)
+}
+  
+  
+}
+
+
+
 module.exports = {
   getProfile,
   createProfile,
   editProfile,
-  
+  follow, 
 }

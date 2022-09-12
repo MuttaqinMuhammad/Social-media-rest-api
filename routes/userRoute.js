@@ -8,9 +8,10 @@ const signupvalidator = require('../validators/user/signup')
 const loginvalidator = require('../validators/user/login')
 
 const {
-signup,	
-login,
-logout,
+	signup,
+	login,
+	logout,
+	changePasswordWithOtp,
 } = require('../controllers/user')
 
 
@@ -18,6 +19,6 @@ logout,
 router.post('/signup', signupvalidator, validationResult, signup)
 router.post('/login',loginvalidator, validationResult, login)
 router.delete('/logout',auth, logout)
-
+router.put('/newpassword', changePasswordWithOtp)
 
 module.exports = router 
