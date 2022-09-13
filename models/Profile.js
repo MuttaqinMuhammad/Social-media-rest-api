@@ -46,11 +46,13 @@ const profileSchema = new Schema({
     }],
     followers: [{
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required:true,
     }],
     following: [{
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required:true,
     }],
     posts: [{
       type: Schema.Types.ObjectId,

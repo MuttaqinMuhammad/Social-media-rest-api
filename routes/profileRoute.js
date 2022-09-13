@@ -6,13 +6,16 @@ const profileValidator = require('../validators/profile/profileValidator')
 const upload = require('../helpers/photoUploader')
 
 const {
-  getProfile,
+  getMyProfile,
+  getUserProfile,
   createProfile,
   editProfile,
-  follow,
+followAndUnfollow, 
 } = require('../controllers/profile')
 
-router.get('/', auth, getProfile)
+router.get('/:userId', auth, getUserProfile)
+router.get('/', auth, getMyProfile)
+
 router.post('/create',
   auth,
   upload.single('avatar'),
@@ -27,5 +30,5 @@ router.post('/edit',
   profileValidator,
   validationResult,
   editProfile)
-router.get('/follow/:userId', auth, follow)
+router.get('/follow/:profileId', auth, followAndUnfollow)
 module.exports = router

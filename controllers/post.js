@@ -8,14 +8,19 @@ const Reply = require('../models/Replie')
 
 
 
-const getPost = async (req, res, next)=>{
-const { postId } = req.params
+const getMyPosts = async (req, res, next)=>{
+const myPostsArray = []
 
 try {
-const post = await Post.findOne({_id:postId})
+const { posts } = await Profile.findOne({user:req.user._id})
+for(let post of posts){
+let myPost = await Post.findOne({_id:post}).populate('likes dislikes user comments')
+myPostsArray.push(myPost)
+}
+
 res.status(200).json({
  success:true,
- post,
+ myPostsArray,
 })
 
 } catch (e) {
@@ -23,6 +28,29 @@ next(e)
 }
   
 }
+const getUserPosts = async (req, res, next)=>{
+const userPostsArray = []
+
+try {
+const { posts } = await Profile.findOne({user:req.params.userId})
+for(let post of posts){
+let myPost = await Post.findOne({_id:post}).populate('likes dislikes user comments')
+userPostsArray.push(myPost)
+}
+
+res.status(200).json({
+ success:true,
+userPostsArray,
+})
+
+} catch (e) {
+next(e)  
+}
+  
+}
+
+
+
 
 const createPost = async (req, res, next)=> {
   const {
@@ -274,7 +302,8 @@ const dislike = async (req, res, next)=> {
 
 
 module.exports = {
-  getPost,
+  getMyPosts,
+  getUserPosts,
   createPost,
   editPost,
   deletePost,

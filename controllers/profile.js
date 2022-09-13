@@ -3,12 +3,11 @@ const User = require('../models/User')
 const cloudinary = require('../config/cloudinary')
 
 
-const getProfile = async (req, res, next)=> {
-
+const getUserProfile = async (req, res, next)=> {
   try {
     const profile = await Profile.findOne({
-      user: req.user._id
-    })
+      user: req.params.userId
+    }).populate("posts followers following user")
     if (profile) {
       return res.status(200).json({
         success: true,
@@ -17,6 +16,27 @@ const getProfile = async (req, res, next)=> {
     }
     throw new Error('you have to create a profile first')
   }catch (e) {
+    next(e)
+  }
+
+}
+
+const getMyProfile = async (req, res, next)=> {
+  try {
+
+    const profile = await Profile.findOne({
+      user: req.user._id
+    }).populate("user following followers posts friends")
+    if (!profile) {
+      throw new Error("profile doesnt exist create a profile at first")
+    }
+    res.status(200).json({
+      success: true,
+      profile,
+    })
+
+
+  } catch (e) {
     next(e)
   }
 
@@ -65,7 +85,7 @@ const createProfile = async (req, res, next)=> {
     })
     if (isprofileExist && isprofileExist._id) {
       throw new Error('profile already exist!')
-}
+    }
 
     const createdProfile = await profile.save()
     await User.updateOne({
@@ -155,49 +175,91 @@ const editProfile = async (req, res, next)=> {
 
 }
 
-const follow = async (req, res, next)=>{
-const { userId } = req.params
-console.log(req.params)
-try {
-  if(req.user._id != userId){
-    const profile = await Profile.findOne({user:userId})
-    console.log(profile)
-    const loggedInUserProfile = await Profile.findOne({user:req.user._id})
-    console.log(loggedInUserProfile)
-    if(!profile && !loggedInUserProfile){
+const followAndUnfollow = async (req, res, next)=> {
+  //profile id whom i want to follow
+  const {
+    profileId
+  } = req.params
+  try {
+
+    //his profile
+
+    //
+    const profileToFollow = await Profile.findOne({
+      _id: profileId
+    })
+
+    const loggedInUserProfile = await Profile.findOne({
+      user: req.user._id
+    })
+
+
+    if (!profileToFollow && !loggedInUserProfile && profileToFollow.user === loggedInUserProfile.user) {
       throw new Error('profile deesnt exist!')
     }
-await Profile.updateOne({user:userId}, {
-  $push:{
-    'followers':req.user._id
+    //checking if the logged in user already follows the person .then i will let him unfollow the user
+    if (profileToFollow.followers.includes(req.user._id)) {
+      await Profile.updateOne({
+        _id: profileId
+      }, {
+        $pull: {
+          followers: req.user._id
+        }
+      })
+
+      await Profile.updateOne({
+        user: req.user._id
+      }, {
+        $pull: {
+          following: profileToFollow.user
+        }
+      })
+
+      return res.status(200).json({
+        success: true,
+        message: "user unfollowed successfully"
+      })
+    }
+
+
+    //if the logged in user dont follow the user then i will let him follow the user
+    await Profile.updateOne({
+      _id: profileId
+    }, {
+      $push: {
+        followers: req.user._id
+      }
+    })
+    await Profile.updateOne({
+      user: req.user._id
+    }, {
+      $push: {
+        following: profileToFollow.user
+      }
+    })
+
+    return res.status(200).json({
+      success: true,
+      message: "user followed successfully"
+    })
+
+
+  } catch (e) {
+    next(e)
   }
-})
-await Profile.updateOne({user:req.user._id}, {
-  $push:{
-    'following':userId
-  }
-})
-  
- return res.status(200).json({
-    success:true
-  })
-  }else{
-    throw new Error('user can not follow himself')
-  }
-  
- 
-} catch (e) {
-  next(e)
+
+
 }
-  
-  
-}
+
+
+const addFriend = async(req, res, next)=> {}
 
 
 
 module.exports = {
-  getProfile,
+  getMyProfile,
+  getUserProfile,
   createProfile,
   editProfile,
-  follow, 
+  followAndUnfollow,
 }
