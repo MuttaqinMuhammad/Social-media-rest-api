@@ -44,20 +44,24 @@ const profileSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'User'
     }],
+    friendRequests: [{
+      type: Schema.Types.ObjectId,
+      ref: 'FriendRequest',
+    }],
     followers: [{
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required:true,
+      required: true,
     }],
     following: [{
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required:true,
+      required: true,
     }],
     posts: [{
       type: Schema.Types.ObjectId,
       ref: 'Post',
-      required:true
+      required: true
     }],
     bookmarks: [{
       type: Schema.Types.ObjectId,

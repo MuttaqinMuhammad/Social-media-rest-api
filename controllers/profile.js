@@ -252,8 +252,128 @@ const followAndUnfollow = async (req, res, next)=> {
 }
 
 
-const addFriend = async(req, res, next)=> {}
+const addFriend = async(req, res, next)=> {
+  const {userId} = req.params
+ if(req.user._id.toString() === userId.toString()){
+const error = new Error()
+error.status = 404
+next(error)
+}  
 
+  try {
+const profile = await Profile.findOne({user:userId})
+  if(profile.friendRequests.includes(req.user._id)){
+await Profile.updateOne({user:userId}, {
+  $pull:{
+  friendRequests:req.user._id
+  }
+})
+return res.status(200).json({
+  success:true,
+  message:"friend request canceled!"
+})
+  }
+  if (profile.friends.includes(req.user._id)) {
+  throw new Error('user is already in your friend list')
+}
+
+  await Profile.updateOne({user:userId},{
+    $push:{
+      friendRequests:req.user._id
+    }
+  })
+  res.status(200).json({
+    success:true,
+    message:"friend request send"
+  })
+  } catch (e) {
+    next(e)
+  }
+  
+}
+
+const acceptFriendRequest = async (req, res, next)=>{
+const { userId } = req.params //friend req sender is
+try {
+
+  const requestSenderProfile = await Profile.findOne({user:userId}) //sender
+  const loggedInUserProfile =  await Profile.findOne({user:req.user._id}) //reciever
+
+if (!loggedInUserProfile.friendRequests.includes(userId)) {
+  throw new Error("no friend request found!")
+}
+
+await Profile.updateOne({user:req.user._id}, {
+  $pull:{
+    friendRequests:userId
+  }
+})
+await Profile.updateOne({user:userId}, {
+  $push:{
+    friends:req.user._id
+  }
+})
+await Profile.updateOne({user:req.user._id}, {
+  $push:{
+    friends:userId
+  }
+})
+
+res.status(200).json({
+  success:true,
+  message:`${requestSenderProfile.nickname} is now your friend`
+})
+} catch (e) {
+  next(e)
+}
+}
+
+const deleteFriendRequest = async (req, res, next)=>{
+  const { userId } = req.params
+try {
+  const requestSenderProfile = await Profile.findOne({user:userId}) //request sender profile
+  const loggedInUserProfile  = await Profile.findOne({user:req.user._id})
+  
+  if(!loggedInUserProfile.friendRequests.includes(userId)){
+    throw new Error('no friend request found!')
+  }
+  
+ await Profile.updateOne({user:req.user._id},{
+  $pull:{
+    friendRequests:userId
+  }
+})  
+  res.status(200).json({
+    success:true,
+    message:"friend request deleted successfully!"
+  })
+  
+} catch (e) {
+  next(e)
+}
+  
+}
+
+const unfriend = async (req, res, next)=>{
+  const { userId } = req.params
+  try {
+  const { nickname, friends } = await Profile.findOne({user:userId})
+if (!friends.includes(req.user._id)) {
+  throw new Error('user is not in your friend list')
+}
+await Profile.updateOne({user:userId}, {
+  $push:{
+    friends:req.user._id
+  }
+})
+res.status(200).json({
+  success:true,
+  message:`${nickname} is no longer your friend`,
+})
+  } catch (e) {
+    next(e)
+  }
+}
 
 
 module.exports = {
@@ -262,4 +382,8 @@ module.exports = {
   createProfile,
   editProfile,
   followAndUnfollow,
+  addFriend,
+  unfriend,
+  acceptFriendRequest,
+  deleteFriendRequest
 }

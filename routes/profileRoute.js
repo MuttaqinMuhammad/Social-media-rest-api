@@ -10,7 +10,11 @@ const {
   getUserProfile,
   createProfile,
   editProfile,
-followAndUnfollow, 
+  followAndUnfollow,
+  addFriend,
+  unfriend,
+  acceptFriendRequest,
+  deleteFriendRequest
 } = require('../controllers/profile')
 
 router.get('/:userId', auth, getUserProfile)
@@ -31,4 +35,8 @@ router.post('/edit',
   validationResult,
   editProfile)
 router.get('/follow/:profileId', auth, followAndUnfollow)
+router.get('/addFriend/:userId',auth, addFriend)
+router.get('/unfriend/:userId',auth, unfriend)
+router.get('/acceptrequest/:userId',auth, acceptFriendRequest)
+router.get('/deleteFriendRequest/:userId',auth, deleteFriendRequest)
 module.exports = router
