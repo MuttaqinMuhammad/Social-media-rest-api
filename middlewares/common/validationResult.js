@@ -1,3 +1,7 @@
+/*
+Description: This function is used to handle express-validator errors.
+*/
+
 const {validationResult} = require('express-validator')
 
 

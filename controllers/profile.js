@@ -1,6 +1,6 @@
 const Profile = require('../models/Profile')
 const User = require('../models/User')
-const cloudinary = require('../config/cloudinary')
+const cloudinary = require('../helpers/cloudinary')
 
 
 const getUserProfile = async (req, res, next)=> {
@@ -254,13 +254,11 @@ const followAndUnfollow = async (req, res, next)=> {
 
 const addFriend = async(req, res, next)=> {
   const {userId} = req.params
- if(req.user._id.toString() === userId.toString()){
-const error = new Error()
-error.status = 404
-next(error)
-}  
 
   try {
+ if(req.user._id.toString() === userId.toString()){
+throw new Error('user not found')
+}
 const profile = await Profile.findOne({user:userId})
   if(profile.friendRequests.includes(req.user._id)){
 await Profile.updateOne({user:userId}, {

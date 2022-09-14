@@ -10,7 +10,7 @@ module.exports = multer({
 	storage:multer.diskStorage({}),
 	
 fileFilter: (req, file, callback)=> {
-	console.log(file)
+
 		if (supportedFormats.includes(file.mimetype)) {
 			callback(null, true)
 		} else {

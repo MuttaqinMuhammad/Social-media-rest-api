@@ -1,7 +1,7 @@
 // internal import
 const Post = require('../models/Post')
 const Comment = require('../models/Comment')
-const cloudinary = require('../config/cloudinary')
+const cloudinary = require('../helpers/cloudinary')
 const Profile = require('../models/Profile')
 const Reply = require('../models/Replie')
 

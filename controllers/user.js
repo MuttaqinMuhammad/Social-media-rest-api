@@ -1,6 +1,10 @@
 // internal import
 const User = require('../models/User')
 const OTP = require('../models/OTP')
+const config = require('config')
+
+const {JWT_SECRET_KEY, JWT_EXPIRY_TIME} = config.get('JWT')
+const AUTH_COOKIE_NAME = config.get('AUTH_COOKIE_NAME')
 
 const hashedPassword = require('../helpers/user/hashPassword')
 
@@ -57,11 +61,11 @@ const verify = user.password === hashedPassword(password)
 		if (verify) {
 			const token = jwt.sign({
 				userId: user._id
-			}, process.env.JWT_SECRET_KEY, {
-				expiresIn: process.env.JWT_EXPIRY_TIME
+			}, JWT_SECRET_KEY, {
+				expiresIn: JWT_EXPIRY_TIME
 			})
 			
-			res.cookie(process.env.COOKIE_NAME, token, {
+			res.cookie(AUTH_COOKIE_NAME, token, {
 				httpOnly: true,
 				signed: true,
 				maxAge: 86400000,
@@ -84,7 +88,7 @@ const verify = user.password === hashedPassword(password)
 }
 
 const logout = async (req, res, next)=>{
-  res.clearCookie(process.env.COOKIE_NAME);
+  res.clearCookie(COOKIE_NAME);
 	res.status(200).json({
 	success:true,
 	message:"log out successful!",
@@ -99,7 +103,7 @@ const cookie = cookies['validate-otp'] ? cookies['validate-otp'] : false
 try {
   if(cookie) {
 
-  const {userId} =jwt.verify(cookie, process.env.JWT_SECRET_KEY)
+  const {userId} =jwt.verify(cookie, JWT_SECRET_KEY)
   const otp = await OTP.findOne({user:userId})
   console.log(otp)
   if(otp.isValid){

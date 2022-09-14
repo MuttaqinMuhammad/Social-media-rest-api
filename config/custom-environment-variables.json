@@ -1,0 +1,13 @@
+{
+  "MONGO_URI":"MONGO_URI",
+  "cloudinary":{
+    "CLOUD_NAME":"CLOUD_NAME",
+    "API_KEY":"API_KEY",
+    "API_SECRET":"API_SECRET"
+  },
+  "nodemailer":{
+    "SMTP_EMAIL":"SMTP_EMAIL",
+    "SMTP_PASSWORD":"SMTP_PASSWORD"
+  }
+  
+}
