@@ -1,16 +1,16 @@
 const router = require('express').Router()
 
-const auth = require('../middlewares/common/auth')
+const auth = require('../../middlewares/common/auth')
 
-const commentValidator = require('../validators/post/commentValidator')
-const validationResult = require('../middlewares/common/validationResult')
+const commentValidator = require('../../validators/post/commentValidator')
+const validationResult = require('../../middlewares/common/validationResult')
 const {
   createComment,
   editComment,
   deleteComment,
   like,
   dislike,
-} = require('../controllers/comment')
+} = require('../../controllers/post/comment')
 
 
 router.post('/create/:postId', auth, commentValidator, validationResult, createComment)

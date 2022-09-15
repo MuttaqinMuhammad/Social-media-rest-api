@@ -1,10 +1,10 @@
 const router = require('express').Router()
 
-const auth = require('../middlewares/common/auth')
-const upload = require('../helpers/photoUploader')
+const auth = require('../../middlewares/common/auth')
+const upload = require('../../helpers/photoUploader')
 
-const postValidator = require('../validators/post/postValidator')
-const validationResult = require('../middlewares/common/validationResult')
+const postValidator = require('../../validators/post/postValidator')
+const validationResult = require('../../middlewares/common/validationResult')
 const {
   getMyPosts,
   getUserPosts,
@@ -13,7 +13,7 @@ const {
   deletePost,
   like,
   dislike,
-} = require('../controllers/post')
+} = require('../../controllers/post/post')
 
 
 router.get('/', auth, getMyPosts) 

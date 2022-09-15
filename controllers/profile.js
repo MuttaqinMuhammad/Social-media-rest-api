@@ -355,18 +355,28 @@ try {
 const unfriend = async (req, res, next)=>{
   const { userId } = req.params
   try {
-  const { nickname, friends } = await Profile.findOne({user:userId})
-if (!friends.includes(req.user._id)) {
-  throw new Error('user is not in your friend list')
-}
+    if(req.user._id.toString() === userId.toString() ){
+      throw new Error('failed to unfriend user!')
+    }
+  const userToUnfriendprofile = await Profile.findOne({user:userId})
+  const loggedInUserProfile = await Profile.findOne({user:req.user._id})
+    if (!userToUnfriendprofile.friends.includes(req.user._id) && !loggedInUserProfile.friends.includes(userId) ) {
+      throw new Error('user is not in your friend list')
+    }
+
 await Profile.updateOne({user:userId}, {
-  $push:{
+  $pull:{
     friends:req.user._id
+  }
+})
+await Profile.updateOne({user:req.user._id}, {
+  $pull:{
+    friends:userId
   }
 })
 res.status(200).json({
   success:true,
-  message:`${nickname} is no longer your friend`,
+  message:`${userToUnfriendprofile.name} is no longer your friend`,
 })
   } catch (e) {
     next(e)

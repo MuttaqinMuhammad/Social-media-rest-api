@@ -1,6 +1,6 @@
-const Comment = require('../models/Comment')
-const Post = require('../models/Post')
-const Reply = require('../models/Replie')
+const Comment = require('../../models/post/Comment')
+const Post = require('../../models/post/Post')
+const Reply = require('../../models/post/Replie')
 
 const createComment = async(req, res, next)=> {
   const {

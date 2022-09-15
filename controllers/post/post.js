@@ -1,9 +1,9 @@
 // internal import
-const Post = require('../models/Post')
-const Comment = require('../models/Comment')
-const cloudinary = require('../helpers/cloudinary')
-const Profile = require('../models/Profile')
-const Reply = require('../models/Replie')
+const Post = require('../../models/post/Post')
+const Comment = require('../../models/post/Comment')
+const cloudinary = require('../../helpers/cloudinary')
+const Profile = require('../../models/Profile')
+const Reply = require('../../models/post/Replie')
 
 
 
@@ -171,7 +171,7 @@ const deletePost = async (req, res, next)=> {
       _id: postId,
       user: req.user._id
     })
-
+    await cloudinary.uploader.destroy(post.image.public_id)
     await Profile.updateOne({
       user: req.user._id
     },

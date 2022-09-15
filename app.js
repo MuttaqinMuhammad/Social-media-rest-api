@@ -9,11 +9,11 @@ require('dotenv').config()
 // routes
 const userRoute = require('./routes/userRoute')
 const profileRoute = require('./routes/profileRoute')
-const postRoute = require('./routes/postRoute')
-const commentRoute = require('./routes/commentRoute')
-const replyRoute = require('./routes/replyRoute')
+const postRoute = require('./routes/post/postRoute')
+const commentRoute = require('./routes/post/commentRoute')
+const replyRoute = require('./routes/post/replyRoute')
 const securityRoute = require('./routes/securityRoute')
-
+const storyRoute = require('./routes/storyRoute')
 
 //middlewares
 const errorhandlers = require('./middlewares/common/errorHandler')
@@ -31,7 +31,7 @@ app.use('/post', postRoute)
 app.use('/comment', commentRoute)
 app.use('/reply', replyRoute)
 app.use('/security', securityRoute)
-
+app.use('/story', storyRoute)
 
 
 

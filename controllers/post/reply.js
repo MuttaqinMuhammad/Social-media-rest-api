@@ -1,5 +1,5 @@
-const Reply = require('../models/Replie')
-const Comment = require('../models/Comment')
+const Reply = require('../../models/post/Replie')
+const Comment = require('../../models/post/Comment')
 
 const createReply = async (req, res, next)=> {
   const {

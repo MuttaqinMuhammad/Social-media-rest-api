@@ -88,7 +88,7 @@ const verify = user.password === hashedPassword(password)
 }
 
 const logout = async (req, res, next)=>{
-  res.clearCookie(COOKIE_NAME);
+  res.clearCookie(AUTH_COOKIE_NAME);
 	res.status(200).json({
 	success:true,
 	message:"log out successful!",
