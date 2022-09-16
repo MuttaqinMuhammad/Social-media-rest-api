@@ -8,17 +8,15 @@ const signupvalidator = require('../validators/user/signup')
 const loginvalidator = require('../validators/user/login')
 
 const {
-	signup,
-	login,
-	logout,
-	changePasswordWithOtp,
+  signup,
+  login,
+  logout,
+  changePasswordWithOtp,
 } = require('../controllers/user')
 
-
-
 router.post('/signup', signupvalidator, validationResult, signup)
-router.post('/login',loginvalidator, validationResult, login)
-router.delete('/logout',auth, logout)
+router.post('/login', loginvalidator, validationResult, login)
+router.delete('/logout', auth, logout)
 router.put('/newpassword', changePasswordWithOtp)
 
-module.exports = router 
+module.exports = router

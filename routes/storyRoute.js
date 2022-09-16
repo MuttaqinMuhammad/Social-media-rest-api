@@ -1,18 +1,18 @@
 const router = require('express').Router()
 const {
-getStories  
-  
+  getStories,
+  getSingleStory,
+  createStory,
+  deleteStory,
 } = require('../controllers/story')
-const cloudinary = require('../helpers/photoUploader')
+const upload = require('../helpers/photoUploader')
 
 //middlewares
 const auth = require('../middlewares/common/auth')
 
-
-router.get('/',auth, getStories)
-// router.get('/:storyId', )
-// router.post('/', createStory)
-// router.delete('/', deleteStory)
-
+router.get('/', auth, getStories)
+router.get('/:storyId', auth, getSingleStory)
+router.post('/', auth, upload.single('story'), createStory)
+router.delete('/:storyId', auth, deleteStory)
 
 module.exports = router

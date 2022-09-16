@@ -12,10 +12,15 @@ const {
   dislike,
 } = require('../../controllers/post/comment')
 
-
-router.post('/create/:postId', auth, commentValidator, validationResult, createComment)
+router.post(
+  '/create/:postId',
+  auth,
+  commentValidator,
+  validationResult,
+  createComment,
+)
 router.put('/edit/:commentId', auth, editComment)
 router.delete('/delete/:commentId', auth, deleteComment)
-router.put("/like/:commentId", auth, like)
-router.put("/dislike/:commentId", auth, dislike)
+router.put('/like/:commentId', auth, like)
+router.put('/dislike/:commentId', auth, dislike)
 module.exports = router

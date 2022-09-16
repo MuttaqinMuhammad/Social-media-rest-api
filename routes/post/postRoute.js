@@ -15,26 +15,26 @@ const {
   dislike,
 } = require('../../controllers/post/post')
 
-
-router.get('/', auth, getMyPosts) 
-router.get('/:userId', auth, getUserPosts) 
-router.post('/create',
-auth,
-upload.single('postImage'),
-postValidator,
-validationResult,
-createPost
+router.get('/', auth, getMyPosts)
+router.get('/:userId', auth, getUserPosts)
+router.post(
+  '/create',
+  auth,
+  upload.single('postImage'),
+  postValidator,
+  validationResult,
+  createPost,
 )
-router.post('/edit/:postId', 
-auth,
-upload.single('postImage'),
-postValidator,
-validationResult,
-editPost
+router.post(
+  '/edit/:postId',
+  auth,
+  upload.single('postImage'),
+  postValidator,
+  validationResult,
+  editPost,
 )
-router.delete('/delete/:postId', auth,deletePost)
+router.delete('/delete/:postId', auth, deletePost)
 router.post('/like/:postId', auth, like)
 router.post('/dislike/:postId', auth, dislike)
-
 
 module.exports = router

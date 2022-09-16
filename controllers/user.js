@@ -3,7 +3,7 @@ const User = require('../models/User')
 const OTP = require('../models/OTP')
 const config = require('config')
 
-const {JWT_SECRET_KEY, JWT_EXPIRY_TIME} = config.get('JWT')
+const { JWT_SECRET_KEY, JWT_EXPIRY_TIME } = config.get('JWT')
 const AUTH_COOKIE_NAME = config.get('AUTH_COOKIE_NAME')
 
 const hashedPassword = require('../helpers/user/hashPassword')
@@ -11,126 +11,113 @@ const hashedPassword = require('../helpers/user/hashPassword')
 //external import
 const jwt = require('jsonwebtoken')
 
+const signup = async (req, res, next) => {
+  const { name, email, password, birthday, gender } = req.body
 
-const signup = async(req, res, next)=> {
+  const user = new User({
+    name,
+    email,
+    password: hashedPassword(password),
+    birthday,
+    gender,
+  })
 
-	const {
-		name,
-		email,
-		password,
-		birthday,
-		gender,
-	} = req.body
-
-	const user = new User({
-		name,
-		email,
-		password:hashedPassword(password),
-		birthday,
-		gender,
-	})
-
-	try {
-		const newUser = await user.save()
-		res.status(200).json({
-			success: true,
-			newUser,
-		})
-	} catch (e) {
-
-		next(e)
-	}
-
-
-}
-
-const login = async (req, res, next)=> {
-	try {
-		
-	const {
-		email,
-		password,
-	} = req.body
-
-	const user = await User.findOne({
-		email
-	}).select('+password')
-
-	if (user._id) {
-const verify = user.password === hashedPassword(password)
-		if (verify) {
-			const token = jwt.sign({
-				userId: user._id
-			}, JWT_SECRET_KEY, {
-				expiresIn: JWT_EXPIRY_TIME
-			})
-			
-			res.cookie(AUTH_COOKIE_NAME, token, {
-				httpOnly: true,
-				signed: true,
-				maxAge: 86400000,
-			})
-			res.status(200).json({
-				success: true,
-				user,
-				token,
-			}) 
-
-		}else{
-		  throw new Error('Access denied!')
-		}
-	}
-
-
-	} catch (e) {
-		next(e)
-	}
-}
-
-const logout = async (req, res, next)=>{
-  res.clearCookie(AUTH_COOKIE_NAME);
-	res.status(200).json({
-	success:true,
-	message:"log out successful!",
-	})
-}
-
-const changePasswordWithOtp = async(req, res, next)=>{
-const { password } =req.body
- 
-const cookies = Object.keys(req.signedCookies).length > 0 ? req.signedCookies : false
-const cookie = cookies['validate-otp'] ? cookies['validate-otp'] : false
-try {
-  if(cookie) {
-
-  const {userId} =jwt.verify(cookie, JWT_SECRET_KEY)
-  const otp = await OTP.findOne({user:userId})
-  console.log(otp)
-  if(otp.isValid){
-     await User.updateOne({_id:userId}, {
-       $set:{
-         password:hashedPassword(password)
-       }
-     })
-      res.status(200).clearCookie("validate-otp").json({
-       success:true
-     })
-  }else{
-    throw new Error('authentication failure')
+  try {
+    const newUser = await user.save()
+    res.status(200).json({
+      success: true,
+      newUser,
+    })
+  } catch (e) {
+    next(e)
   }
-  }else{
-    throw new Error('authentication failure')
-  }
-} catch (e) {
-  next(e)
-}  
-  
 }
 
+const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+
+    const user = await User.findOne({
+      email,
+    }).select('+password')
+
+    if (user._id) {
+      const verify = user.password === hashedPassword(password)
+      if (verify) {
+        const token = jwt.sign(
+          {
+            userId: user._id,
+          },
+          JWT_SECRET_KEY,
+          {
+            expiresIn: JWT_EXPIRY_TIME,
+          },
+        )
+
+        res.cookie(AUTH_COOKIE_NAME, token, {
+          httpOnly: true,
+          signed: true,
+          maxAge: 86400000,
+        })
+        res.status(200).json({
+          success: true,
+          user,
+          token,
+        })
+      } else {
+        throw new Error('Access denied!')
+      }
+    }
+  } catch (e) {
+    next(e)
+  }
+}
+
+const logout = async (req, res, next) => {
+  res.clearCookie(AUTH_COOKIE_NAME)
+  res.status(200).json({
+    success: true,
+    message: 'log out successful!',
+  })
+}
+
+const changePasswordWithOtp = async (req, res, next) => {
+  const { password } = req.body
+
+  const cookies =
+    Object.keys(req.signedCookies).length > 0 ? req.signedCookies : false
+  const cookie = cookies['validate-otp'] ? cookies['validate-otp'] : false
+  try {
+    if (cookie) {
+      const { userId } = jwt.verify(cookie, JWT_SECRET_KEY)
+      const otp = await OTP.findOne({ user: userId })
+      console.log(otp)
+      if (otp.isValid) {
+        await User.updateOne(
+          { _id: userId },
+          {
+            $set: {
+              password: hashedPassword(password),
+            },
+          },
+        )
+        res.status(200).clearCookie('validate-otp').json({
+          success: true,
+        })
+      } else {
+        throw new Error('authentication failure')
+      }
+    } else {
+      throw new Error('authentication failure')
+    }
+  } catch (e) {
+    next(e)
+  }
+}
 
 module.exports = {
-	signup,
-	login,
-	logout,
-	changePasswordWithOtp,
+  signup,
+  login,
+  logout,
+  changePasswordWithOtp,
 }
