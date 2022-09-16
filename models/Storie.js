@@ -36,3 +36,8 @@ message:{
   trim:true,
 }
 },{timestamps:true})
+
+
+const Story = new model("Storie", storySchema)
+
+module.exports = Story

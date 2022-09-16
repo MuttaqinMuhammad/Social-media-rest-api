@@ -5,9 +5,9 @@ const getStories = async (req, res, next)=>{
 try {
 const profile = await Profile.findOne({user:req.user._id})
 if(profile.friends.lenght === 0) throw new Error('No story to show!')
-const friendsStory = profile.friends.push(req.user._id);
+const getAllStories = profile.friends.push(req.user._id);
 const stories = Story.find({
-    'creator': { $in: friendsStory }
+    'creator': { $in: getAllStories }
 });
 res.status(200).json({
   success:true,

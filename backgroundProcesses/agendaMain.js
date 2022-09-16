@@ -1,4 +1,4 @@
-/*
+
 const Agenda = require('agenda');
 const config = require('config')
 //tasks
@@ -15,19 +15,25 @@ db: {
     processEvery: "30 seconds",
     maxConcurrency: 20,
 })
-
 agenda.on('ready', () => console.log("Agenda started!"))
+
+
 
 agenda.define("clear-expired-Otp", clearExpiredOtp)
 agenda.define("clear-expired-stories", clearExpiredStories)
 
 
 
-
-(async function () {
-   await agenda.start()
+const agendaStart = async()=>{
+ try {
+     await agenda.start()
   await agenda.every("1 minutes", "clear-expired-Otp")
   await agenda.every("1 minutes", "clear-expired-stories")
-})()
+ } catch (e) {
+   console.log(`agenda error: ${e}`)
+ }
+}
+agendaStart()
 
-module.exports = agenda*/
+
+module.exports = agenda;

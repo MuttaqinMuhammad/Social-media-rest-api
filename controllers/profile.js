@@ -252,6 +252,47 @@ const followAndUnfollow = async (req, res, next)=> {
 }
 
 
+
+const FriendList = async(req, res, next)=>{
+try {
+    const loggedInUser =  req.user._id
+const profile = await Profile.findOne({user:loggedInUser})
+if(!profile){
+  throw new Error('you have to create a profile first')
+}
+if(profile.friends.length === 0){
+return res.status(200).json({
+  success:true,
+  friends:[],
+})
+}
+res.status(200).json({
+  success:true,
+  friends:profile.friends
+})
+} catch (e) {
+  next(e)
+}
+}
+const friendRequests =async (req, res, next)=>{
+ const loggedInUser = req.user._id 
+  const profile = await Profile.findOne({user:loggedInUser})
+  if(!profile){
+    throw new Error("you have to create a profile first!")
+  }
+if(profile.friendRequests.length === 0){
+return res.status(200).json({
+  success:true,
+  friendRequests:[]
+})
+}
+res.status(200).json({
+success:true,
+friendRequests:profile.friendRequests
+})
+  
+}
+
 const addFriend = async(req, res, next)=> {
   const {userId} = req.params
 
@@ -390,6 +431,8 @@ module.exports = {
   createProfile,
   editProfile,
   followAndUnfollow,
+  FriendList,
+  friendRequests,
   addFriend,
   unfriend,
   acceptFriendRequest,

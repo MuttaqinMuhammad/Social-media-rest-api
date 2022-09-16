@@ -11,6 +11,8 @@ const {
   createProfile,
   editProfile,
   followAndUnfollow,
+  FriendList,
+  friendRequests,
   addFriend,
   unfriend,
   acceptFriendRequest,
@@ -19,7 +21,6 @@ const {
 
 router.get('/:userId', auth, getUserProfile)
 router.get('/', auth, getMyProfile)
-
 router.post('/create',
   auth,
   upload.single('avatar'),
@@ -27,7 +28,6 @@ router.post('/create',
   validationResult,
   createProfile
 )
-
 router.post('/edit',
   auth,
   upload.single('avatar'),
@@ -35,6 +35,8 @@ router.post('/edit',
   validationResult,
   editProfile)
 router.get('/follow/:profileId', auth, followAndUnfollow)
+router.get('/friends', auth, FriendList)
+router.get('/friendrequests', auth, friendRequests)
 router.get('/addFriend/:userId',auth, addFriend)
 router.get('/unfriend/:userId',auth, unfriend)
 router.get('/acceptrequest/:userId',auth, acceptFriendRequest)

@@ -1,11 +1,19 @@
 //external import
 const express = require('express')
-
+const http = require('http')
 const app = express()
 require('dotenv').config()
+const server = http.createServer(app)
 
 
-// internal imports
+//socket 
+const io = require('socket.io')(server)
+global.io = io
+
+
+
+
+
 // routes
 const userRoute = require('./routes/userRoute')
 const profileRoute = require('./routes/profileRoute')
@@ -40,4 +48,4 @@ app.use(errorhandlers)
 
 
 
-module.exports = app
+module.exports = server

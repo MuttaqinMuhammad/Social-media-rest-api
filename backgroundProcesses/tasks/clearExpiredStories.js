@@ -1,9 +1,8 @@
-
-
 const Story = require('../../models/Storie')
-
-module.exports = async (job)=>{
    
+
+const clearExpiredStories = async (job)=>{
+
  try {
   const storyList = await Story.find() 
    
@@ -24,3 +23,4 @@ storyList.forEach(async storyObj=>{
   
 }
 
+module.exports = clearExpiredStories
