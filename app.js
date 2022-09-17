@@ -8,6 +8,9 @@ const server = http.createServer(app)
 //socket
 const io = require('socket.io')(server)
 global.io = io
+io.on('connection', (socket) => {
+  console.log('a user connected')
+})
 
 // routes
 const userRoute = require('./routes/userRoute')
@@ -17,7 +20,7 @@ const commentRoute = require('./routes/post/commentRoute')
 const replyRoute = require('./routes/post/replyRoute')
 const securityRoute = require('./routes/securityRoute')
 const storyRoute = require('./routes/storyRoute')
-
+const notificationRoute = require('./routes/notificationRoute')
 //middlewares
 const errorhandlers = require('./middlewares/common/errorHandler')
 const middlewares = require('./middlewares/middlewares')
@@ -33,7 +36,7 @@ app.use('/comment', commentRoute)
 app.use('/reply', replyRoute)
 app.use('/security', securityRoute)
 app.use('/story', storyRoute)
-
+app.use('/notification', notificationRoute)
 //using error handleling middlewares
 app.use(errorhandlers)
 

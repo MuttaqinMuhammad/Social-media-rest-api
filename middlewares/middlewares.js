@@ -6,6 +6,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
 const config = require('config')
+const path = require('path')
 
 const COOKIE_SECRET_KEY = config.get('COOKIE_SECRET_KEY')
 
@@ -14,4 +15,5 @@ module.exports = [
   morgan('dev'),
   express.urlencoded({ extended: true }),
   cookieParser(COOKIE_SECRET_KEY),
+  express.static(path.join(__dirname, '../public')),
 ]

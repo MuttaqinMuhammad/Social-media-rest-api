@@ -4,6 +4,8 @@ const Comment = require('../../models/post/Comment')
 const cloudinary = require('../../helpers/cloudinary')
 const Profile = require('../../models/Profile')
 const Reply = require('../../models/post/Replie')
+const Notification = require('../../models/Notification')
+
 
 const getMyPosts = async (req, res, next) => {
   const myPostsArray = []
@@ -203,9 +205,9 @@ const like = async (req, res, next) => {
           },
         },
       )
-
       return res.status(200).json({
         success: true,
+        message: 'like removed',
       })
     }
 
@@ -219,6 +221,17 @@ const like = async (req, res, next) => {
         },
       },
     )
+    const notification = await Notification.create({
+      sender: req.user._id,
+      reciever: post.user,
+      event: 'like',
+      source: {
+        sourceId: post._id,
+        referance: 'post',
+      },
+    })
+    console.log(notification)
+    global.io.emit('Notification', notification)
 
     res.status(200).json({
       success: true,
