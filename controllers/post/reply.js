@@ -12,7 +12,7 @@ const createReply = async (req, res, next) => {
 
   try {
     const comment = await Comment.findOne({ _id: commentId })
-if(!comment)throw new Error('comment doesnt exist to reply!')
+    if (!comment) throw new Error('comment doesnt exist to reply!')
     const userReply = await reply.save()
     await Comment.updateOne(
       {
@@ -24,20 +24,19 @@ if(!comment)throw new Error('comment doesnt exist to reply!')
         },
       },
     )
-    
-      const notification = await Notification.create({
+
+    const notification = await Notification.create({
       sender: req.user._id,
       reciever: comment.user,
       event: 'reply',
       source: {
-        sourceId:comment._id,
+        sourceId: comment._id,
         referance: 'replied',
       },
     })
     console.log(notification)
     global.io.emit('Notification', notification)
 
-    
     res.status(200).json({
       success: true,
       userReply,
@@ -158,7 +157,7 @@ const like = async (req, res, next) => {
       reciever: reply.user,
       event: 'like',
       source: {
-        sourceId:reply._id,
+        sourceId: reply._id,
         referance: 'reply',
       },
     })

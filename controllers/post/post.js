@@ -6,7 +6,6 @@ const Profile = require('../../models/Profile')
 const Reply = require('../../models/post/Replie')
 const Notification = require('../../models/Notification')
 
-
 const getMyPosts = async (req, res, next) => {
   const myPostsArray = []
 
@@ -221,18 +220,19 @@ const like = async (req, res, next) => {
         },
       },
     )
-    const notification = await Notification.create({
-      sender: req.user._id,
-      reciever: post.user,
-      event: 'like',
-      source: {
-        sourceId: post._id,
-        referance: 'post',
-      },
-    })
-    console.log(notification)
-    global.io.emit('Notification', notification)
-
+    console.log(post.user.toString() !== user.toString())
+    if (post.user.toString() !== user.toString()) {
+      const notification = await Notification.create({
+        sender: req.user._id,
+        reciever: post.user,
+        event: 'like',
+        source: {
+          sourceId: post._id,
+          referance: 'post',
+        },
+      })
+      global.io.emit('Notification', notification)
+    }
     res.status(200).json({
       success: true,
     })

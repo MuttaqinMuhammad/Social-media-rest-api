@@ -1,4 +1,5 @@
 const User = require('./User')
+const Post = require('./post/Post')
 const { Schema, model } = require('mongoose')
 
 const notificationSchema = new Schema(
@@ -37,27 +38,61 @@ const notificationSchema = new Schema(
 )
 
 notificationSchema.pre('save', async function () {
-  // if(this.sender === this.reciever) return;
+  if (this.event.toUpperCase() === 'COMMENT') {
+    const post = await Post.findOne({ _id: this.source.sourceId })
+    if (this.sender.toString() === post.user.toString()) {
+      console.log('hit on the target')
+      return
+    }
+  }
   const user = await User.findOne({ _id: this.sender })
   switch (this.event.toUpperCase()) {
     case 'LIKE':
       this.text = `${user.name} liked your ${this.source.referance}`
-      break;
+      break
     case 'COMMENT':
       this.text = `${user.name} commented on your ${this.source.referance}`
-      break;
+      break
     case 'REPLY':
       this.text = `${user.name} ${this.source.referance} your comment`
-      break;
+      break
     case 'ADDFRIEND':
       this.text = `${user.name} send you a ${this.source.referance} request`
-      break;
+      break
     case 'STORY':
       this.text = `${user.name} uploaded a ${this.source.referance}`
-      break;
+      break
   }
 })
 
+notificationSchema.statics = {
+  notifyAll: async function (sender, sourceId) {
+    const post = await Post.findOne({ _id: sourceId }).populate('comments')
+    const user = await User.findOne({ id: sender })
+
+    const commentators = post.comments.filter(
+      (comments) => comments.user.toString() !== sender.toString(),
+    ) //array
+
+    commentators.forEach(async (comments) => {
+      const notifyAllCommentators = new this({
+        sender: sender,
+        reciever: comments.user,
+        event: 'comment',
+        text: `${user.name} also commented ${
+          user.gender === 'male' ? 'his' : 'her'
+        } post`,
+        source: {
+          sourceId: sourceId,
+          referance: 'post',
+        },
+      })
+      await notifyAllCommentators.save()
+      console.log(notifyAllCommentators)
+    })
+    return true
+  },
+}
 const Notification = new model('Notification', notificationSchema)
 
 module.exports = Notification
