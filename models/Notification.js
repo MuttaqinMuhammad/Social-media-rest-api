@@ -17,7 +17,7 @@ const notificationSchema = new Schema(
     },
     event: {
       type: String,
-      enum: ['like', 'comment', 'reply', 'friendRequest', 'story','custom'],
+      enum: ['like', 'comment', 'reply', 'friendRequest', 'story', 'custom'],
       required: true,
     },
     text: {
@@ -75,9 +75,9 @@ notificationSchema.statics = {
     const commentators = post.comments.filter(
       (comments) => comments.user.toString() !== sender.toString(),
     ) //array
-if(commentators.length <= 0){
-  return
-}
+    if (commentators.length <= 0) {
+      return
+    }
     commentators.forEach(async (comments) => {
       const notifyAllCommentators = new this({
         sender: sender,
@@ -95,38 +95,35 @@ if(commentators.length <= 0){
     })
     return true
   },
-  
-  
-  notifyOtherReplyUsers: async function (sender, sourceId){
-   const user = await User.findOne({_id:sender})
-    const comment = await Comment.findOne({_id:sourceId}).populate('user replies')
-  if(comment.replies.length <= 0){
-    return;
-  }
-    const replies = comment.replies.filter(replyObject=>replyObject.user !== sender && comment.user)
+
+  notifyOtherReplyUsers: async function (sender, sourceId) {
+    const user = await User.findOne({ _id: sender })
+    const comment = await Comment.findOne({ _id: sourceId }).populate(
+      'user replies',
+    )
+    if (comment.replies.length <= 0) {
+      return
+    }
+    const replies = comment.replies.filter(
+      (replyObject) => replyObject.user !== sender && comment.user,
+    )
     console.log(replies)
-  replies.forEach(replyObject=>{
+    replies.forEach((replyObject) => {
       const notifyAllReplyUser = new this({
-      sender: sender,
-      reciever: replyObject.user,
-      event: 'custom',
-      text: `${user.name} replied on ${comment.user.name}s comment`,
-      source: {
-        sourceId: sourceId,
-        referance: 'comment',
-      },
+        sender: sender,
+        reciever: replyObject.user,
+        event: 'custom',
+        text: `${user.name} replied on ${comment.user.name}s comment`,
+        source: {
+          sourceId: sourceId,
+          referance: 'comment',
+        },
       })
-  
-    
-  })
-    
-return true;
-  }
-  
+    })
+
+    return true
+  },
 }
-
-
-
 
 const Notification = new model('Notification', notificationSchema)
 

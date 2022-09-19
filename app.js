@@ -9,7 +9,6 @@ const server = http.createServer(app)
 const io = require('socket.io')(server)
 global.io = io
 
-
 // routes
 const userRoute = require('./routes/userRoute')
 const profileRoute = require('./routes/profileRoute')

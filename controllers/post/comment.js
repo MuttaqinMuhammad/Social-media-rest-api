@@ -165,18 +165,18 @@ const like = async (req, res, next) => {
       },
     )
 
-if(comment.user.toString() !== user.toString()){
-  const notification = await Notification.create({
-      sender: user,
-      reciever: comment.user,
-      event: 'like',
-      source: {
-        sourceId: comment._id,
-        referance: 'comment',
-      },
-    })
-    global.io.emit('Notification', notification)
-}
+    if (comment.user.toString() !== user.toString()) {
+      const notification = await Notification.create({
+        sender: user,
+        reciever: comment.user,
+        event: 'like',
+        source: {
+          sourceId: comment._id,
+          referance: 'comment',
+        },
+      })
+      global.io.emit('Notification', notification)
+    }
     res.status(200).json({
       success: true,
     })

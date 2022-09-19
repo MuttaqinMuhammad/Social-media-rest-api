@@ -129,7 +129,7 @@ const editPost = async (req, res, next) => {
       )
       res.status(200).json({
         success: true,
-        error:false,
+        error: false,
       })
     } else {
       throw new Error('not found')
@@ -166,7 +166,7 @@ const deletePost = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      error:false,
+      error: false,
     })
   } catch {
     const error = new Error()
@@ -222,7 +222,7 @@ const like = async (req, res, next) => {
         },
       },
     )
-    
+
     if (post.user.toString() !== user.toString()) {
       const notification = await Notification.create({
         sender: req.user._id,
@@ -237,7 +237,7 @@ const like = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
-      error:false
+      error: false,
     })
   } catch {
     const error = new Error()
@@ -279,7 +279,7 @@ const dislike = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
-        error:false,
+        error: false,
       })
     }
 
@@ -296,7 +296,7 @@ const dislike = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      error:false
+      error: false,
     })
   } catch (e) {
     const error = new Error()
