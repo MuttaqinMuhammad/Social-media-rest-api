@@ -4,9 +4,10 @@ const Notification = require('../../models/Notification')
 
 const createReply = async (req, res, next) => {
   const { commentId } = req.params
+  const user = req.user._id
   const reply = new Reply({
     body: req.body.body,
-    user: req.user._id,
+    user,
     commentId,
   })
 
@@ -24,26 +25,26 @@ const createReply = async (req, res, next) => {
         },
       },
     )
-
+    
     const notification = await Notification.create({
-      sender: req.user._id,
+      sender: user,
       reciever: comment.user,
       event: 'reply',
       source: {
         sourceId: comment._id,
-        referance: 'replied',
+        referance: 'comment',
       },
     })
-    console.log(notification)
     global.io.emit('Notification', notification)
-
+ const status =  await Notification.notifyOtherReplyUsers(user, commentId)
+    console.log(`status ${status}`)
+    
     res.status(200).json({
       success: true,
       userReply,
     })
-  } catch {
-    const error = new Error('no comment found')
-    next(error)
+  } catch(e) {
+    next(e)
   }
 }
 
@@ -68,6 +69,7 @@ const editReply = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      error:false,
     })
   } catch (error) {
     error.message = 'only comment createor can edit his comment'
@@ -99,6 +101,7 @@ const deleteReply = async (req, res, next) => {
     )
     res.status(200).json({
       success: true,
+      error:false,
     })
   } catch {
     const error = new Error('there was a server side error')
@@ -139,6 +142,7 @@ const like = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
+        error:false,
       })
     }
 
@@ -166,6 +170,7 @@ const like = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      error:false,
     })
   } catch {
     const error = new Error('there was a server side error')
@@ -206,6 +211,7 @@ const dislike = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
+        error:false,
       })
     }
 
@@ -222,6 +228,7 @@ const dislike = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      error:false,
     })
   } catch {
     const error = new Error('there was a server side error')

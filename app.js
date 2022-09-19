@@ -8,9 +8,7 @@ const server = http.createServer(app)
 //socket
 const io = require('socket.io')(server)
 global.io = io
-io.on('connection', (socket) => {
-  console.log('a user connected')
-})
+
 
 // routes
 const userRoute = require('./routes/userRoute')

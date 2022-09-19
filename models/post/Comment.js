@@ -34,7 +34,7 @@ const commentSchema = new Schema(
     replies: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Replie',
         required: true,
       },
     ],

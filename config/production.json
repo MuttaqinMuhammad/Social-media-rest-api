@@ -1,10 +1,10 @@
 {
   "port": 6000,
-  "PASSWORD_SALT": "MuttaqinMuhammad",
-  "COOKIE_SECRET_KEY": "MuttaqinMuhammad",
-  "AUTH_COOKIE_NAME": "social_media",
+  "PASSWORD_SALT": "",
+  "COOKIE_SECRET_KEY": "",
+  "AUTH_COOKIE_NAME": "",
   "JWT": {
-    "JWT_SECRET_KEY": "MuttaqinMuhammad",
-    "JWT_EXPIRY_TIME": "1d"
+    "JWT_SECRET_KEY": "",
+    "JWT_EXPIRY_TIME": ""
   }
 }

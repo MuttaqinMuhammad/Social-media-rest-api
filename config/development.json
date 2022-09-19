@@ -7,4 +7,5 @@
     "JWT_SECRET_KEY": "MuttaqinMuhammad",
     "JWT_EXPIRY_TIME": "1d"
   }
+  
 }

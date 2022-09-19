@@ -27,7 +27,7 @@ const createComment = async (req, res, next) => {
       },
     )
 
-    if (post.user.toString() !== user.toString()) {
+    if (post.user.toString() !== userComment.user.toString()) {
       const notification = await Notification.create({
         sender: req.user._id,
         reciever: post.user,
@@ -39,7 +39,7 @@ const createComment = async (req, res, next) => {
       })
       global.io.emit('Notification', notification)
     } else {
-      await Notification.notifyAll(user, postId)
+      await Notification.notifyAllCommentators(userComment.user, postId)
     }
 
     res.status(200).json({
@@ -165,7 +165,8 @@ const like = async (req, res, next) => {
       },
     )
 
-    const notification = await Notification.create({
+if(comment.user.toString() !== user.toString()){
+  const notification = await Notification.create({
       sender: user,
       reciever: comment.user,
       event: 'like',
@@ -175,7 +176,7 @@ const like = async (req, res, next) => {
       },
     })
     global.io.emit('Notification', notification)
-
+}
     res.status(200).json({
       success: true,
     })
