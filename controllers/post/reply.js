@@ -1,6 +1,7 @@
 const Reply = require('../../models/post/Replie')
 const Comment = require('../../models/post/Comment')
 const Notification = require('../../models/Notification')
+const notifyAllRepliers = require('../../helpers/notification/notifyAllrepliers')
 
 const createReply = async (req, res, next) => {
   const { commentId } = req.params
@@ -15,7 +16,7 @@ const createReply = async (req, res, next) => {
     const comment = await Comment.findOne({ _id: commentId })
     if (!comment) throw new Error('comment doesnt exist to reply!')
     const userReply = await reply.save()
-    await Comment.updateOne(
+    const updatedComment = await Comment.findOneAndUpdate(
       {
         _id: commentId,
       },
@@ -24,7 +25,10 @@ const createReply = async (req, res, next) => {
           replies: userReply._id,
         },
       },
-    )
+      {
+        new: true,
+      },
+    ).populate('user replies')
 
     const notification = await Notification.create({
       sender: user,
@@ -36,8 +40,8 @@ const createReply = async (req, res, next) => {
       },
     })
     global.io.emit('Notification', notification)
-    const status = await Notification.notifyOtherReplyUsers(user, commentId)
-    console.log(`status ${status}`)
+
+    await notifyAllRepliers(req.user, updatedComment)
 
     res.status(200).json({
       success: true,

@@ -36,6 +36,6 @@ const replySchema = new Schema(
   },
 )
 
-const Reply = new model('replie', replySchema)
+const Reply = new model('Replie', replySchema)
 
 module.exports = Reply

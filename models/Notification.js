@@ -37,14 +37,7 @@ const notificationSchema = new Schema(
   },
   { timestamps: true },
 )
-/*
-  if (this.event.toUpperCase() === 'COMMENT') {
-    const post = await Post.findOne({ _id: this.source.sourceId })
-    if (this.sender.toString() === post.user.toString()) {
-      console.log('hit on the target')
-      return
-    }
-  }*/
+
 notificationSchema.pre('save', async function () {
   const user = await User.findOne({ _id: this.sender })
   switch (this.event.toUpperCase()) {
@@ -65,65 +58,6 @@ notificationSchema.pre('save', async function () {
       break
   }
 })
-
-notificationSchema.statics = {
-  notifyAllCommentators: async function (sender, sourceId) {
-    const post = await Post.findOne({ _id: sourceId }).populate('comments')
-    const user = await User.findOne({ id: sender })
-    console.log(post.user)
-    console.log(user)
-    const commentators = post.comments.filter(
-      (comments) => comments.user.toString() !== sender.toString(),
-    ) //array
-    if (commentators.length <= 0) {
-      return
-    }
-    commentators.forEach(async (comments) => {
-      const notifyAllCommentators = new this({
-        sender: sender,
-        reciever: comments.user,
-        event: 'custom',
-        text: `${user.name} also commented on ${
-          user.gender === 'male' ? 'his' : 'her'
-        } post`,
-        source: {
-          sourceId: sourceId,
-          referance: 'post',
-        },
-      })
-      await notifyAllCommentators.save()
-    })
-    return true
-  },
-
-  notifyOtherReplyUsers: async function (sender, sourceId) {
-    const user = await User.findOne({ _id: sender })
-    const comment = await Comment.findOne({ _id: sourceId }).populate(
-      'user replies',
-    )
-    if (comment.replies.length <= 0) {
-      return
-    }
-    const replies = comment.replies.filter(
-      (replyObject) => replyObject.user !== sender && comment.user,
-    )
-    console.log(replies)
-    replies.forEach((replyObject) => {
-      const notifyAllReplyUser = new this({
-        sender: sender,
-        reciever: replyObject.user,
-        event: 'custom',
-        text: `${user.name} replied on ${comment.user.name}s comment`,
-        source: {
-          sourceId: sourceId,
-          referance: 'comment',
-        },
-      })
-    })
-
-    return true
-  },
-}
 
 const Notification = new model('Notification', notificationSchema)
 

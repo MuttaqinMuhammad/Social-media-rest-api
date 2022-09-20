@@ -2,21 +2,24 @@ const Comment = require('../../models/post/Comment')
 const Post = require('../../models/post/Post')
 const Reply = require('../../models/post/Replie')
 const Notification = require('../../models/Notification')
+const notifyAllCommentators = require('../../helpers/notification/notifyAllCommentators')
 
 const createComment = async (req, res, next) => {
   const { postId } = req.params
   const user = req.user._id
-  const post = await Post.findOne({ _id: postId })
-  if (!post) throw new Error('no post exist to comment!')
-  const comment = new Comment({
-    body: req.body.body,
-    user,
-    postId,
-  })
 
   try {
+    const post = await Post.findOne({ _id: postId })
+    if (!post) throw new Error('no post exist to comment!')
+    const comment = new Comment({
+      body: req.body.body,
+      user,
+      postId,
+    })
+
     const userComment = await comment.save()
-    await Post.updateOne(
+
+    const updatedPost = await Post.findOneAndUpdate(
       {
         _id: postId,
       },
@@ -25,23 +28,29 @@ const createComment = async (req, res, next) => {
           comments: userComment._id,
         },
       },
-    )
+      {
+        new: true,
+      },
+    ).populate('comments')
 
-    if (post.user.toString() !== userComment.user.toString()) {
-      const notification = await Notification.create({
-        sender: req.user._id,
-        reciever: post.user,
-        event: 'comment',
-        source: {
-          sourceId: postId,
-          referance: 'post',
-        },
+    if (userComment.user.toString() === updatedPost.user.toString()) {
+      await notifyAllCommentators(req.user, updatedPost)
+      return res.status(200).json({
+        success: true,
+        userComment,
       })
-      global.io.emit('Notification', notification)
-    } else {
-      await Notification.notifyAllCommentators(userComment.user, postId)
     }
 
+    const notification = await Notification.create({
+      sender: req.user._id,
+      reciever: post.user,
+      event: 'comment',
+      source: {
+        sourceId: postId,
+        referance: 'post',
+      },
+    })
+    global.io.emit('Notification', notification)
     res.status(200).json({
       success: true,
       userComment,
