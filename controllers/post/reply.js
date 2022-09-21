@@ -30,6 +30,14 @@ const createReply = async (req, res, next) => {
       },
     ).populate('user replies')
 
+if(updatedComment.user._id.toString()=== req.user._id.toString()){
+await notifyAllRepliers(req.user, updatedComment)
+return res.status(200).json({
+  success:true,
+  updatedComment,
+})
+}
+
     const notification = await Notification.create({
       sender: user,
       reciever: comment.user,
