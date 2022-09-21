@@ -5,80 +5,80 @@ const profileSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: 'User',
+      ref: 'User'
     },
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     avatar: {
       public_id: String,
-      url: String,
+      url: String
     },
 
     nickname: String,
     bio: {
-      type: String,
+      type: String
     },
     address: {
       country: String,
       city: String,
       zipcode: String,
-      homeAddress: String,
+      homeAddress: String
     },
     occupation: String,
     worksAt: String,
     joined: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     hobby: {
-      type: Array,
+      type: Array
     },
     friends: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
+        ref: 'User'
+      }
     ],
     friendRequests: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'FriendRequest',
-      },
+        ref: 'FriendRequest'
+      }
     ],
     followers: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
+        required: true
+      }
     ],
     following: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
+        required: true
+      }
     ],
     posts: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Post',
-        required: true,
-      },
+        required: true
+      }
     ],
     bookmarks: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Post',
-      },
-    ],
+        ref: 'Post'
+      }
+    ]
   },
   {
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 const Profile = new model('Profile', profileSchema)

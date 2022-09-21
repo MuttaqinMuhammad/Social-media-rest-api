@@ -44,7 +44,7 @@ return res.status(200).json({
       event: 'reply',
       source: {
         sourceId: comment._id,
-        referance: 'comment',
+        referance: 'Comment',
       },
     })
     global.io.emit('Notification', notification)
@@ -168,18 +168,19 @@ const like = async (req, res, next) => {
         },
       },
     )
+    if(reply.user.toString()!==user.toString()){
     const notification = await Notification.create({
       sender: req.user._id,
       reciever: reply.user,
       event: 'like',
       source: {
         sourceId: reply._id,
-        referance: 'reply',
+        referance: 'Replie',
       },
     })
     console.log(notification)
     global.io.emit('Notification', notification)
-
+}
     res.status(200).json({
       success: true,
       error: false,

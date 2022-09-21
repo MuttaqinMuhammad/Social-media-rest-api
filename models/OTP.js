@@ -5,18 +5,18 @@ const otpSchema = new Schema(
     otp: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     user: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: true
     },
     isValid: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 const Otp = new model('otp', otpSchema)

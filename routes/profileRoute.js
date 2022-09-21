@@ -16,7 +16,7 @@ const {
   addFriend,
   unfriend,
   acceptFriendRequest,
-  deleteFriendRequest,
+  deleteFriendRequest
 } = require('../controllers/profile')
 
 router.get('/:userId', auth, getUserProfile)
@@ -27,7 +27,7 @@ router.post(
   upload.single('avatar'),
   profileValidator,
   validationResult,
-  createProfile,
+  createProfile
 )
 router.post(
   '/edit',
@@ -35,7 +35,7 @@ router.post(
   upload.single('avatar'),
   profileValidator,
   validationResult,
-  editProfile,
+  editProfile
 )
 router.get('/follow/:profileId', auth, followAndUnfollow)
 router.get('/friends', auth, FriendList)

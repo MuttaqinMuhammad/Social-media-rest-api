@@ -9,10 +9,10 @@ const MONGO_URI = config.get('MONGO_URI')
 const agenda = new Agenda({
   db: {
     address: MONGO_URI,
-    options: { useUnifiedTopology: true },
+    options: { useUnifiedTopology: true }
   },
   processEvery: '30 seconds',
-  maxConcurrency: 20,
+  maxConcurrency: 20
 })
 agenda.on('ready', () => console.log('Agenda started!'))
 

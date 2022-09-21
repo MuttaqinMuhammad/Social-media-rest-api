@@ -15,5 +15,5 @@ module.exports = [
   morgan('dev'),
   express.urlencoded({ extended: true }),
   cookieParser(COOKIE_SECRET_KEY),
-  express.static(path.join(__dirname, '../public')),
+  express.static(path.join(__dirname, '../public'))
 ]

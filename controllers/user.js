@@ -19,14 +19,14 @@ const signup = async (req, res, next) => {
     email,
     password: hashedPassword(password),
     birthday,
-    gender,
+    gender
   })
 
   try {
     const newUser = await user.save()
     res.status(200).json({
       success: true,
-      newUser,
+      newUser
     })
   } catch (e) {
     next(e)
@@ -38,7 +38,7 @@ const login = async (req, res, next) => {
     const { email, password } = req.body
 
     const user = await User.findOne({
-      email,
+      email
     }).select('+password')
 
     if (user._id) {
@@ -46,23 +46,23 @@ const login = async (req, res, next) => {
       if (verify) {
         const token = jwt.sign(
           {
-            userId: user._id,
+            userId: user._id
           },
           JWT_SECRET_KEY,
           {
-            expiresIn: JWT_EXPIRY_TIME,
-          },
+            expiresIn: JWT_EXPIRY_TIME
+          }
         )
 
         res.cookie(AUTH_COOKIE_NAME, token, {
           httpOnly: true,
           signed: true,
-          maxAge: 86400000,
+          maxAge: 86400000
         })
         res.status(200).json({
           success: true,
           user,
-          token,
+          token
         })
       } else {
         throw new Error('Access denied!')
@@ -77,7 +77,7 @@ const logout = async (req, res, next) => {
   res.clearCookie(AUTH_COOKIE_NAME)
   res.status(200).json({
     success: true,
-    message: 'log out successful!',
+    message: 'log out successful!'
   })
 }
 
@@ -97,12 +97,12 @@ const changePasswordWithOtp = async (req, res, next) => {
           { _id: userId },
           {
             $set: {
-              password: hashedPassword(password),
-            },
-          },
+              password: hashedPassword(password)
+            }
+          }
         )
         res.status(200).clearCookie('validate-otp').json({
-          success: true,
+          success: true
         })
       } else {
         throw new Error('authentication failure')
@@ -119,5 +119,5 @@ module.exports = {
   signup,
   login,
   logout,
-  changePasswordWithOtp,
+  changePasswordWithOtp
 }

@@ -28,7 +28,7 @@ module.exports = async (sender, source) =>
           text: `${user.name} replied to ${user._id.toString()===comment.user._id.toString()?"his":`${comment.user.name}'\s`} comment`,
           source: {
             sourceId: source._id,
-            referance: 'comment',
+            referance: 'Comment',
           },
         })
       })

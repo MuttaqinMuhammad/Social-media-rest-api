@@ -11,5 +11,5 @@ module.exports = multer({
     } else {
       callback(new Error('only .png , .jpg , .jpeg format allowed'))
     }
-  },
+  }
 })

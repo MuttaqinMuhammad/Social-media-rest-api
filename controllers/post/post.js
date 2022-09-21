@@ -230,7 +230,7 @@ const like = async (req, res, next) => {
         event: 'like',
         source: {
           sourceId: post._id,
-          referance: 'post',
+          referance: 'Post',
         },
       })
       global.io.emit('Notification', notification)

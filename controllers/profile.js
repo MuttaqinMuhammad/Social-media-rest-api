@@ -5,12 +5,12 @@ const cloudinary = require('../helpers/cloudinary')
 const getUserProfile = async (req, res, next) => {
   try {
     const profile = await Profile.findOne({
-      user: req.params.userId,
+      user: req.params.userId
     }).populate('posts followers following user')
     if (profile) {
       return res.status(200).json({
         success: true,
-        profile,
+        profile
       })
     }
     throw new Error('you have to create a profile first')
@@ -22,14 +22,14 @@ const getUserProfile = async (req, res, next) => {
 const getMyProfile = async (req, res, next) => {
   try {
     const profile = await Profile.findOne({
-      user: req.user._id,
+      user: req.user._id
     }).populate('user following followers posts friends')
     if (!profile) {
       throw new Error('profile doesnt exist create a profile at first')
     }
     res.status(200).json({
       success: true,
-      profile,
+      profile
     })
   } catch (e) {
     next(e)
@@ -47,7 +47,7 @@ const createProfile = async (req, res, next) => {
     worksAt,
     hobby,
     user: req.user._id,
-    name: req.user.name,
+    name: req.user.name
   })
 
   if (req.file) {
@@ -55,13 +55,13 @@ const createProfile = async (req, res, next) => {
     const { secure_url, public_id } = result
     profile.avatar = {
       url: secure_url,
-      public_id,
+      public_id
     }
   }
 
   try {
     const isprofileExist = await Profile.findOne({
-      user: req.user._id,
+      user: req.user._id
     })
     if (isprofileExist && isprofileExist._id) {
       throw new Error('profile already exist!')
@@ -70,18 +70,18 @@ const createProfile = async (req, res, next) => {
     const createdProfile = await profile.save()
     await User.updateOne(
       {
-        _id: req.user._id,
+        _id: req.user._id
       },
       {
         $set: {
-          profile: createdProfile._id,
-        },
-      },
+          profile: createdProfile._id
+        }
+      }
     )
 
     res.status(200).json({
       success: true,
-      createdProfile,
+      createdProfile
     })
   } catch (e) {
     next(e)
@@ -96,7 +96,7 @@ const editProfile = async (req, res, next) => {
 
     if (req.file) {
       const profile = await Profile.findOne({
-        user: req.user._id,
+        user: req.user._id
       })
       if (profile.avatar.public_id) {
         await cloudinary.uploader.destroy(profile.avatar.public_id)
@@ -105,7 +105,7 @@ const editProfile = async (req, res, next) => {
 
     const editedProfile = await Profile.updateOne(
       {
-        user: req.user._id,
+        user: req.user._id
       },
       {
         $set: {
@@ -114,30 +114,30 @@ const editProfile = async (req, res, next) => {
           address,
           avatar: {
             url: secure_url,
-            public_id,
+            public_id
           },
           occupation,
           worksAt,
-          hobby,
-        },
-      },
+          hobby
+        }
+      }
     )
     await User.updateOne(
       {
-        _id: req.user._id,
+        _id: req.user._id
       },
       {
         $set: {
           avatar: {
             url: secure_url,
-            public_id,
-          },
-        },
-      },
+            public_id
+          }
+        }
+      }
     )
     res.status(200).json({
       success: true,
-      editedProfile,
+      editedProfile
     })
   } catch (e) {
     next(e)
@@ -148,15 +148,12 @@ const followAndUnfollow = async (req, res, next) => {
   //profile id whom i want to follow
   const { profileId } = req.params
   try {
-    //his profile
-
-    //
     const profileToFollow = await Profile.findOne({
-      _id: profileId,
+      _id: profileId
     })
 
     const loggedInUserProfile = await Profile.findOne({
-      user: req.user._id,
+      user: req.user._id
     })
 
     if (
@@ -170,57 +167,57 @@ const followAndUnfollow = async (req, res, next) => {
     if (profileToFollow.followers.includes(req.user._id)) {
       await Profile.updateOne(
         {
-          _id: profileId,
+          _id: profileId
         },
         {
           $pull: {
-            followers: req.user._id,
-          },
-        },
+            followers: req.user._id
+          }
+        }
       )
 
       await Profile.updateOne(
         {
-          user: req.user._id,
+          user: req.user._id
         },
         {
           $pull: {
-            following: profileToFollow.user,
-          },
-        },
+            following: profileToFollow.user
+          }
+        }
       )
 
       return res.status(200).json({
         success: true,
-        message: 'user unfollowed successfully',
+        message: 'user unfollowed successfully'
       })
     }
 
     //if the logged in user dont follow the user then i will let him follow the user
     await Profile.updateOne(
       {
-        _id: profileId,
+        _id: profileId
       },
       {
         $push: {
-          followers: req.user._id,
-        },
-      },
+          followers: req.user._id
+        }
+      }
     )
     await Profile.updateOne(
       {
-        user: req.user._id,
+        user: req.user._id
       },
       {
         $push: {
-          following: profileToFollow.user,
-        },
-      },
+          following: profileToFollow.user
+        }
+      }
     )
 
     return res.status(200).json({
       success: true,
-      message: 'user followed successfully',
+      message: 'user followed successfully'
     })
   } catch (e) {
     next(e)
@@ -230,39 +227,42 @@ const followAndUnfollow = async (req, res, next) => {
 const FriendList = async (req, res, next) => {
   try {
     const loggedInUser = req.user._id
-    const profile = await Profile.findOne({ user: loggedInUser })
+    const profile = await Profile.findOne({ user: loggedInUser }).populate(
+      'friends'
+    )
     if (!profile) {
       throw new Error('you have to create a profile first')
     }
-    if (profile.friends.length === 0) {
+    if (profile.friends.length <= 0) {
       return res.status(200).json({
         success: true,
-        friends: [],
+        friends: ' Your friend list is empty!'
       })
     }
     res.status(200).json({
       success: true,
-      friends: profile.friends,
+      friends: profile.friends
     })
   } catch (e) {
     next(e)
   }
 }
+
 const friendRequests = async (req, res, next) => {
   const loggedInUser = req.user._id
   const profile = await Profile.findOne({ user: loggedInUser })
   if (!profile) {
     throw new Error('you have to create a profile first!')
   }
-  if (profile.friendRequests.length === 0) {
+  if (profile.friendRequests.length <= 0) {
     return res.status(200).json({
       success: true,
-      friendRequests: [],
+      friendRequests: 'you dont have any friend request!'
     })
   }
   res.status(200).json({
     success: true,
-    friendRequests: profile.friendRequests,
+    friendRequests: profile.friendRequests
   })
 }
 
@@ -279,13 +279,13 @@ const addFriend = async (req, res, next) => {
         { user: userId },
         {
           $pull: {
-            friendRequests: req.user._id,
-          },
-        },
+            friendRequests: req.user._id
+          }
+        }
       )
       return res.status(200).json({
         success: true,
-        message: 'friend request canceled!',
+        message: 'friend request canceled!'
       })
     }
     if (profile.friends.includes(req.user._id)) {
@@ -296,13 +296,13 @@ const addFriend = async (req, res, next) => {
       { user: userId },
       {
         $push: {
-          friendRequests: req.user._id,
-        },
-      },
+          friendRequests: req.user._id
+        }
+      }
     )
     res.status(200).json({
       success: true,
-      message: 'friend request send',
+      message: 'friend request send'
     })
   } catch (e) {
     next(e)
@@ -323,30 +323,30 @@ const acceptFriendRequest = async (req, res, next) => {
       { user: req.user._id },
       {
         $pull: {
-          friendRequests: userId,
-        },
-      },
+          friendRequests: userId
+        }
+      }
     )
     await Profile.updateOne(
       { user: userId },
       {
         $push: {
-          friends: req.user._id,
-        },
-      },
+          friends: req.user._id
+        }
+      }
     )
     await Profile.updateOne(
       { user: req.user._id },
       {
         $push: {
-          friends: userId,
-        },
-      },
+          friends: userId
+        }
+      }
     )
 
     res.status(200).json({
       success: true,
-      message: `${requestSenderProfile.nickname} is now your friend`,
+      message: `${requestSenderProfile.nickname} is now your friend`
     })
   } catch (e) {
     next(e)
@@ -367,13 +367,13 @@ const deleteFriendRequest = async (req, res, next) => {
       { user: req.user._id },
       {
         $pull: {
-          friendRequests: userId,
-        },
-      },
+          friendRequests: userId
+        }
+      }
     )
     res.status(200).json({
       success: true,
-      message: 'friend request deleted successfully!',
+      message: 'friend request deleted successfully!'
     })
   } catch (e) {
     next(e)
@@ -399,21 +399,21 @@ const unfriend = async (req, res, next) => {
       { user: userId },
       {
         $pull: {
-          friends: req.user._id,
-        },
-      },
+          friends: req.user._id
+        }
+      }
     )
     await Profile.updateOne(
       { user: req.user._id },
       {
         $pull: {
-          friends: userId,
-        },
-      },
+          friends: userId
+        }
+      }
     )
     res.status(200).json({
       success: true,
-      message: `${userToUnfriendprofile.name} is no longer your friend`,
+      message: `${userToUnfriendprofile.name} is no longer your friend`
     })
   } catch (e) {
     next(e)
@@ -431,5 +431,5 @@ module.exports = {
   addFriend,
   unfriend,
   acceptFriendRequest,
-  deleteFriendRequest,
+  deleteFriendRequest
 }

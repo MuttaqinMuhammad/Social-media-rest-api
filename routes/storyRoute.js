@@ -3,7 +3,7 @@ const {
   getStories,
   getSingleStory,
   createStory,
-  deleteStory,
+  deleteStory
 } = require('../controllers/story')
 const upload = require('../helpers/photoUploader')
 

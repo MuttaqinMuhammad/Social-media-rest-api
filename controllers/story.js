@@ -9,16 +9,16 @@ const getStories = async (req, res, next) => {
       if (!userStory) throw new Error('No story to show!')
       return res.status(200).json({
         success: true,
-        userStory,
+        userStory
       })
     }
     const getAllStories = profile.friends.unshift(req.user._id)
     const stories = Story.find({
-      creator: { $in: getAllStories },
+      creator: { $in: getAllStories }
     })
     res.status(200).json({
       success: true,
-      stories,
+      stories
     })
   } catch (e) {
     next(e)
@@ -33,7 +33,7 @@ const getSingleStory = async (req, res, next) => {
     if (story.creator.toString() === req.user._id.toString()) {
       return res.status(200).json({
         success: true,
-        story,
+        story
       })
     }
     if (story.privicy.toUpperCase() !== 'PUBLIC') {
@@ -41,13 +41,13 @@ const getSingleStory = async (req, res, next) => {
         throw new Error('story is visible to his friends only!')
       return res.status(200).json({
         success: true,
-        story,
+        story
       })
     }
 
     res.status(200).json({
       success: true,
-      story,
+      story
     })
   } catch (e) {
     next(e)
@@ -61,7 +61,7 @@ const createStory = async (req, res, next) => {
     }
 
     const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'Stories',
+      folder: 'Stories'
     })
     const { secure_url, public_id } = result
     console.log(result)
@@ -70,14 +70,14 @@ const createStory = async (req, res, next) => {
       creator: req.user._id,
       image: {
         secureUrl: secure_url,
-        publicId: public_id,
+        publicId: public_id
       },
-      privicy: req.body.privicy,
+      privicy: req.body.privicy
     })
     const createdStory = await story.save()
     res.status(200).json({
       success: true,
-      createdStory,
+      createdStory
     })
   } catch (e) {
     next(e)
@@ -97,7 +97,7 @@ const deleteStory = async (req, res, next) => {
     await Story.deleteOne({ _id: storyId })
     res.status(200).json({
       success: true,
-      message: 'Story deleted successfuly',
+      message: 'Story deleted successfuly'
     })
   } catch (e) {
     next(e)
@@ -108,5 +108,5 @@ module.exports = {
   getStories,
   getSingleStory,
   createStory,
-  deleteStory,
+  deleteStory
 }

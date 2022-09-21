@@ -29,7 +29,7 @@ const notifyAllCommentators = async (sender, source) =>
           } post`,
           source: {
             sourceId: source._id,
-            referance: 'post',
+            referance: 'Post',
           },
         })
       })

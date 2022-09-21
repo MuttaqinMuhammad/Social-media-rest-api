@@ -47,7 +47,7 @@ const createComment = async (req, res, next) => {
       event: 'comment',
       source: {
         sourceId: postId,
-        referance: 'post',
+        referance: 'Post',
       },
     })
     global.io.emit('Notification', notification)
@@ -160,6 +160,7 @@ const like = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
+        message:'like removed'
       })
     }
 
@@ -181,7 +182,7 @@ const like = async (req, res, next) => {
         event: 'like',
         source: {
           sourceId: comment._id,
-          referance: 'comment',
+          referance: 'Comment',
         },
       })
       global.io.emit('Notification', notification)

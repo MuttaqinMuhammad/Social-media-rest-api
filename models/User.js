@@ -6,46 +6,46 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
 
     email: {
       type: String,
       required: true,
       trim: true,
-      lowercase: true,
+      lowercase: true
     },
     avatar: {
       public_id: String,
-      url: String,
+      url: String
     },
 
     password: {
       type: String,
       required: true,
       select: false,
-      trim: true,
+      trim: true
     },
     birthday: {
       type: String,
-      required: true,
+      required: true
     },
 
     gender: {
       type: String,
       enum: ['male', 'female', 'custom'],
       default: 'male',
-      required: true,
+      required: true
     },
 
     profile: {
       type: Schema.Types.ObjectId,
-      ref: 'Profile',
-    },
+      ref: 'Profile'
+    }
   },
   {
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 const User = new model('User', userSchema)

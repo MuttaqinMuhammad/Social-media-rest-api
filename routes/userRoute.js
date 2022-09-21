@@ -11,7 +11,7 @@ const {
   signup,
   login,
   logout,
-  changePasswordWithOtp,
+  changePasswordWithOtp
 } = require('../controllers/user')
 
 router.post('/signup', signupvalidator, validationResult, signup)

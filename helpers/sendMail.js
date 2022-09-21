@@ -8,17 +8,17 @@ module.exports = ({ title, body, emailReciever }) => {
     from: SMTP_EMAIL,
     to: emailReciever,
     subject: title,
-    text: body,
+    text: body
   }
   nodemailer
     .createTransport({
       service: 'gmail',
       auth: {
         user: SMTP_EMAIL,
-        pass: SMTP_PASSWORD,
+        pass: SMTP_PASSWORD
       },
       port: 465,
-      host: 'smtp@gmail.com',
+      host: 'smtp@gmail.com'
     })
     .sendMail(msg, (err) => {
       if (err) {
