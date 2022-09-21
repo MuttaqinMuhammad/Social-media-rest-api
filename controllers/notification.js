@@ -23,18 +23,23 @@ const showNotifications = async (req, res, next) => {
 
 const viewSource = async (req, res, next) => {
   const { notificationId } = req.params
+  const supportedReferances = ['Post', 'Comment', 'Replie']
   try {
     const notification = await Notification.findOne({ _id: notificationId })
-    const source = await getSourceFromNotification(req.user, notification)
-    res.status(200).json({
-      success: true,
-      source
-    })
+
+    if (supportedReferances.includes(notification.source.referance)) {
+      const source = await getSourceFromNotification(notification)
+      return res.status(200).json({
+        success: true,
+        source
+      })
+    }
   } catch (e) {
     next(e)
   }
 }
 
 module.exports = {
-  showNotifications
+  showNotifications,
+  viewSource
 }

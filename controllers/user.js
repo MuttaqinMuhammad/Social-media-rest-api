@@ -2,22 +2,20 @@
 const User = require('../models/User')
 const OTP = require('../models/OTP')
 const config = require('config')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const { JWT_SECRET_KEY, JWT_EXPIRY_TIME } = config.get('JWT')
 const AUTH_COOKIE_NAME = config.get('AUTH_COOKIE_NAME')
 
-const hashedPassword = require('../helpers/user/hashPassword')
-
-//external import
-const jwt = require('jsonwebtoken')
-
 const signup = async (req, res, next) => {
   const { name, email, password, birthday, gender } = req.body
-
+  const hashedPassword = await bcrypt.hash(password, 10)
+  console.log(hashedPassword)
   const user = new User({
     name,
     email,
-    password: hashedPassword(password),
+    password: hashedPassword,
     birthday,
     gender
   })
@@ -40,9 +38,8 @@ const login = async (req, res, next) => {
     const user = await User.findOne({
       email
     }).select('+password')
-
     if (user._id) {
-      const verify = user.password === hashedPassword(password)
+      const verify = await bcrypt.compare(password, user.password)
       if (verify) {
         const token = jwt.sign(
           {

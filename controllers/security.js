@@ -25,10 +25,10 @@ const sendOtp = async (req, res, next) => {
       const mailParam = {
         title: `your ${APP_NAME} OTP `,
         body: `Here is your OTP:${randomOTP} for the response your forget password request.
-  please dont share this to anyone . this token will be expired in  munites.`,
+  please dont share this to anyone . this token will be expired in   munites.`,
         emailReciever: email
       }
-      // const sendMailToUser = sendMail(mailParam)
+      const sendMailToUser = sendMail(mailParam)
       const userData = {
         userId: user._id,
         name: user.name,
@@ -44,11 +44,10 @@ const sendOtp = async (req, res, next) => {
         .cookie('validate-otp', payload, {
           httpOnly: true,
           signed: true,
-          maxAge: 1000 * 60 * 60
+          maxAge: 1000 * 60 * 10
         })
         .json({
           success: true,
-          randomOTP, //must delete
           message: 'an otp has been sended to your email'
         })
     } catch (e) {

@@ -1,6 +1,8 @@
 const cloudinary = require('../helpers/cloudinary')
 const Story = require('../models/Storie')
 const Profile = require('../models/Profile')
+const storyAlert = require('../helpers/notification/storyAlert')
+
 const getStories = async (req, res, next) => {
   try {
     const profile = await Profile.findOne({ user: req.user._id })
@@ -64,7 +66,6 @@ const createStory = async (req, res, next) => {
       folder: 'Stories'
     })
     const { secure_url, public_id } = result
-    console.log(result)
 
     const story = new Story({
       creator: req.user._id,
@@ -75,6 +76,9 @@ const createStory = async (req, res, next) => {
       privicy: req.body.privicy
     })
     const createdStory = await story.save()
+
+    await storyAlert(createdStory)
+
     res.status(200).json({
       success: true,
       createdStory

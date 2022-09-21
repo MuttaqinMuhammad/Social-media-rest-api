@@ -239,10 +239,8 @@ const like = async (req, res, next) => {
       success: true,
       error: false,
     })
-  } catch {
-    const error = new Error()
-    error.message = 'there was a server side error'
-    next(error)
+  } catch (e){
+    next(e)
   }
 }
 

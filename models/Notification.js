@@ -36,7 +36,8 @@ const notificationSchema = new Schema(
     source: {
       sourceId: {
         type: Schema.Types.ObjectId,
-        required: true
+        required: true,
+        refPath: 'source.referance'
       },
       referance: {
         type: String,
@@ -54,6 +55,7 @@ notificationSchema.pre('save', async function () {
       this.text = `${user.name} liked your ${addSourceName(
         this.source.referance
       )}`
+
       break
     case 'COMMENT':
       this.text = `${user.name} commented on your post`
@@ -64,10 +66,8 @@ notificationSchema.pre('save', async function () {
     case 'ADDFRIEND':
       this.text = `${user.name} send you a friend request`
       break
-    case 'STORY':
-      this.text = `${user.name} uploaded a story`
-      break
   }
+  next()
 })
 
 const Notification = new model('Notification', notificationSchema)
