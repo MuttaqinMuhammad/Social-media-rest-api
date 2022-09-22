@@ -13,14 +13,14 @@ const getMyPosts = async (req, res, next) => {
     const { posts } = await Profile.findOne({ user: req.user._id })
     for (let post of posts) {
       let myPost = await Post.findOne({ _id: post }).populate(
-        'likes dislikes user comments',
+        'likes dislikes user comments'
       )
       myPostsArray.push(myPost)
     }
 
     res.status(200).json({
       success: true,
-      myPostsArray,
+      myPostsArray
     })
   } catch (e) {
     next(e)
@@ -33,14 +33,14 @@ const getUserPosts = async (req, res, next) => {
     const { posts } = await Profile.findOne({ user: req.params.userId })
     for (let post of posts) {
       let myPost = await Post.findOne({ _id: post }).populate(
-        'likes dislikes user comments',
+        'likes dislikes user comments'
       )
       userPostsArray.push(myPost)
     }
 
     res.status(200).json({
       success: true,
-      userPostsArray,
+      userPostsArray
     })
   } catch (e) {
     next(e)
@@ -52,7 +52,7 @@ const createPost = async (req, res, next) => {
   const post = new Post({
     user: req.user._id,
     caption,
-    body,
+    body
   })
   try {
     if (req.file) {
@@ -60,24 +60,24 @@ const createPost = async (req, res, next) => {
       const { secure_url, public_id } = result
       post.image = {
         url: secure_url,
-        public_id,
+        public_id
       }
     }
 
     const newPost = await post.save()
     await Profile.updateOne(
       {
-        user: req.user._id,
+        user: req.user._id
       },
       {
         $push: {
-          posts: newPost._id,
-        },
-      },
+          posts: newPost._id
+        }
+      }
     )
     res.status(200).json({
       success: true,
-      newPost,
+      newPost
     })
   } catch (e) {
     next(e)
@@ -92,7 +92,7 @@ const editPost = async (req, res, next) => {
     //checks if the client is the post author
     const verifyAuthor = await Post.findOne({
       _id: postId,
-      user: req.user._id,
+      user: req.user._id
     })
 
     if (verifyAuthor) {
@@ -109,27 +109,27 @@ const editPost = async (req, res, next) => {
             $set: {
               image: {
                 url: secure_url,
-                public_id,
-              },
-            },
-          },
+                public_id
+              }
+            }
+          }
         )
       }
 
       const post = await Post.updateOne(
         {
-          _id: postId,
+          _id: postId
         },
         {
           $set: {
             caption,
-            body,
-          },
-        },
+            body
+          }
+        }
       )
       res.status(200).json({
         success: true,
-        error: false,
+        error: false
       })
     } else {
       throw new Error('not found')
@@ -143,30 +143,30 @@ const deletePost = async (req, res, next) => {
   try {
     const { postId } = req.params
     const post = await Post.findOne({
-      _id: postId,
+      _id: postId
     })
 
     await Post.deleteOne({
       _id: postId,
-      user: req.user._id,
+      user: req.user._id
     })
     await cloudinary.uploader.destroy(post.image.public_id)
     await Profile.updateOne(
       {
-        user: req.user._id,
+        user: req.user._id
       },
       {
         $pull: {
-          posts: postId,
-        },
-      },
+          posts: postId
+        }
+      }
     )
 
     Post.removeChilds(post)
 
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
   } catch {
     const error = new Error()
@@ -181,46 +181,46 @@ const like = async (req, res, next) => {
     const { postId } = req.params
     const user = req.user._id
     const post = await Post.findOne({
-      _id: postId,
+      _id: postId
     })
 
     if (post.dislikes.includes(user)) {
       await Post.updateOne(
         {
-          _id: postId,
+          _id: postId
         },
         {
           $pull: {
-            dislikes: user,
-          },
-        },
+            dislikes: user
+          }
+        }
       )
     } else if (post.likes.includes(user)) {
       await Post.updateOne(
         {
-          _id: postId,
+          _id: postId
         },
         {
           $pull: {
-            likes: user,
-          },
-        },
+            likes: user
+          }
+        }
       )
       return res.status(200).json({
         success: true,
-        message: 'like removed',
+        message: 'like removed'
       })
     }
 
     await Post.updateOne(
       {
-        _id: postId,
+        _id: postId
       },
       {
         $push: {
-          likes: user,
-        },
-      },
+          likes: user
+        }
+      }
     )
 
     if (post.user.toString() !== user.toString()) {
@@ -230,16 +230,16 @@ const like = async (req, res, next) => {
         event: 'like',
         source: {
           sourceId: post._id,
-          referance: 'Post',
-        },
+          referance: 'Post'
+        }
       })
       global.io.emit('Notification', notification)
     }
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
-  } catch (e){
+  } catch (e) {
     next(e)
   }
 }
@@ -249,52 +249,52 @@ const dislike = async (req, res, next) => {
     const { postId } = req.params
     const user = req.user._id
     const post = await Post.findOne({
-      _id: postId,
+      _id: postId
     })
 
     if (post.likes.includes(user)) {
       await Post.updateOne(
         {
-          _id: postId,
+          _id: postId
         },
         {
           $pull: {
-            likes: user,
-          },
-        },
+            likes: user
+          }
+        }
       )
     } else if (post.dislikes.includes(user)) {
       await Post.updateOne(
         {
-          _id: postId,
+          _id: postId
         },
         {
           $pull: {
-            dislikes: user,
-          },
-        },
+            dislikes: user
+          }
+        }
       )
 
       return res.status(200).json({
         success: true,
-        error: false,
+        error: false
       })
     }
 
     await Post.updateOne(
       {
-        _id: postId,
+        _id: postId
       },
       {
         $push: {
-          dislikes: user,
-        },
-      },
+          dislikes: user
+        }
+      }
     )
 
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
   } catch (e) {
     const error = new Error()
@@ -310,5 +310,5 @@ module.exports = {
   editPost,
   deletePost,
   like,
-  dislike,
+  dislike
 }

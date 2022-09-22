@@ -66,7 +66,7 @@ const login = async (req, res, next) => {
       }
     }
   } catch (e) {
-    next(e)
+    next('Access denied')
   }
 }
 
@@ -111,6 +111,11 @@ const changePasswordWithOtp = async (req, res, next) => {
     next(e)
   }
 }
+
+const deleteAccount = async (req,res,next)=>{
+  
+}
+
 
 module.exports = {
   signup,

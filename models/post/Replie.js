@@ -5,35 +5,35 @@ const replySchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     commentId: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: 'Comment',
+      ref: 'Comment'
     },
 
     body: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     likes: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
+        ref: 'User'
+      }
     ],
     dislikes: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
+        ref: 'User'
+      }
+    ]
   },
   {
-    timeStamps: true,
-  },
+    timeStamps: true
+  }
 )
 
 const Reply = new model('Replie', replySchema)

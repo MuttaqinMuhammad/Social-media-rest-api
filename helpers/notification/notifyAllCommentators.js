@@ -11,8 +11,8 @@ const notifyAllCommentators = async (sender, source) =>
       (comments, index, array) =>
         comments.user.toString() !== sender._id.toString() &&
         array.findIndex(
-          (data) => data.user.toString() === comments.user.toString(),
-        ) === index,
+          (data) => data.user.toString() === comments.user.toString()
+        ) === index
     ) //array
     if (commentators.length <= 0) {
       return
@@ -29,8 +29,8 @@ const notifyAllCommentators = async (sender, source) =>
           } post`,
           source: {
             sourceId: source._id,
-            referance: 'Post',
-          },
+            referance: 'Post'
+          }
         })
       })
       resolve(true)

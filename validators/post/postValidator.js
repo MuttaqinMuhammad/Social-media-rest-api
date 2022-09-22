@@ -12,5 +12,5 @@ module.exports = [
     .isEmpty()
     .withMessage('post body is required')
     .isLength({ max: 6000 })
-    .withMessage('post can not be more than 6000 charactes'),
+    .withMessage('post can not be more than 6000 charactes')
 ]

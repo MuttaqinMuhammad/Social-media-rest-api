@@ -5,7 +5,7 @@ const {
   editReply,
   deleteReply,
   like,
-  dislike,
+  dislike
 } = require('../../controllers/post/reply')
 const auth = require('../../middlewares/common/auth')
 const validationResult = require('../../middlewares/common/validationResult')
@@ -16,7 +16,7 @@ router.post(
   auth,
   replyValidator,
   validationResult,
-  createReply,
+  createReply
 )
 router.put('/edit/:replyId', auth, replyValidator, validationResult, editReply)
 router.delete('/delete/:replyId', auth, deleteReply)

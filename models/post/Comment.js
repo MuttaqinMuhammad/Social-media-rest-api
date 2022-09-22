@@ -5,43 +5,43 @@ const commentSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     postId: {
       type: Schema.Types.ObjectId,
       ref: 'Post',
-      required: true,
+      required: true
     },
     body: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     likes: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
+        required: true
+      }
     ],
     dislikes: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
+        required: true
+      }
     ],
     replies: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Replie',
-        required: true,
-      },
-    ],
+        required: true
+      }
+    ]
   },
   {
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 const comment = new model('Comment', commentSchema)

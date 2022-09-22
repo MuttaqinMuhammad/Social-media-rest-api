@@ -29,7 +29,7 @@ binding data which i have decoded from cookie to req.user
   } else {
     res.status(500).json({
       success: false,
-      message: 'please login first',
+      message: 'please login first'
     })
   }
 }

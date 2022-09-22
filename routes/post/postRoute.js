@@ -12,7 +12,7 @@ const {
   editPost,
   deletePost,
   like,
-  dislike,
+  dislike
 } = require('../../controllers/post/post')
 
 router.get('/', auth, getMyPosts)
@@ -23,7 +23,7 @@ router.post(
   upload.single('postImage'),
   postValidator,
   validationResult,
-  createPost,
+  createPost
 )
 router.post(
   '/edit/:postId',
@@ -31,7 +31,7 @@ router.post(
   upload.single('postImage'),
   postValidator,
   validationResult,
-  editPost,
+  editPost
 )
 router.delete('/delete/:postId', auth, deletePost)
 router.post('/like/:postId', auth, like)

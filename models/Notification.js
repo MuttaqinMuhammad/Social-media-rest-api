@@ -25,6 +25,7 @@ const notificationSchema = new Schema(
         'friendRequest',
         'acceptFriendRequest',
         'story',
+        'follow',
         'custom'
       ],
       required: true
@@ -63,11 +64,19 @@ notificationSchema.pre('save', async function () {
     case 'REPLY':
       this.text = `${user.name} replied to your comment`
       break
-    case 'ADDFRIEND':
+    case 'FRIENDREQUEST':
       this.text = `${user.name} send you a friend request`
       break
+    
+      case 'ACCEPTFRIENDREQUEST':
+      this.text = `${user.name} accepted your friend request`
+      break
+    
+    case 'FOLLOW':
+      this.text = `${user.name} started following you`
+      break
+      
   }
-  next()
 })
 
 const Notification = new model('Notification', notificationSchema)

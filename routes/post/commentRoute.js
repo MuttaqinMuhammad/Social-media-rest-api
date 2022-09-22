@@ -9,7 +9,7 @@ const {
   editComment,
   deleteComment,
   like,
-  dislike,
+  dislike
 } = require('../../controllers/post/comment')
 
 router.post(
@@ -17,7 +17,7 @@ router.post(
   auth,
   commentValidator,
   validationResult,
-  createComment,
+  createComment
 )
 router.put('/edit/:commentId', auth, editComment)
 router.delete('/delete/:commentId', auth, deleteComment)

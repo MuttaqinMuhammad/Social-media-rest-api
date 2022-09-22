@@ -11,14 +11,14 @@ const errorHandler = (err, req, res, next) => {
   if (err.status === 404) {
     return res.status(404).json({
       success: false,
-      error: '404 not found!',
+      error: '404 not found!'
     })
   }
 
   console.log(colors.bold.brightRed(err))
   res.status(500).json({
     success: false,
-    error: err.message,
+    error: err.message
   })
 }
 

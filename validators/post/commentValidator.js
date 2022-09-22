@@ -6,7 +6,7 @@ module.exports = [
     .isEmpty()
     .withMessage('comment can not be empty')
     .isLength({
-      max: 5000,
+      max: 5000
     })
-    .withMessage('comment can not be more than 5000 characters'),
+    .withMessage('comment can not be more than 5000 characters')
 ]

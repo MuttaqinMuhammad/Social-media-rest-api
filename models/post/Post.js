@@ -7,47 +7,47 @@ const postSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     caption: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     body: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     image: {
       public_id: String,
-      url: String,
+      url: String
     },
     comments: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Comment',
-        required: true,
-      },
+        required: true
+      }
     ],
     likes: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
+        required: true
+      }
     ],
     dislikes: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-      },
-    ],
+        required: true
+      }
+    ]
   },
   {
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 postSchema.statics = {
@@ -57,7 +57,7 @@ postSchema.statics = {
     if (comments) {
       comments.forEach(async (commentId) => {
         const singleComment = await Comment.findOne({
-          _id: commentId,
+          _id: commentId
         })
 
         const replies =
@@ -70,11 +70,11 @@ postSchema.statics = {
         }
 
         await Comment.deleteOne({
-          _id: commentId,
+          _id: commentId
         })
       })
     }
-  },
+  }
 }
 const Post = new model('Post', postSchema)
 

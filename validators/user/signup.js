@@ -28,7 +28,7 @@ module.exports = [
     .withMessage('password can not be empty!')
     .isStrongPassword()
     .withMessage(
-      'password must contain one capital letter one small letter one number and one character',
+      'password must contain one capital letter one small letter one number and one character'
     ),
   body('birthday')
     .not()
@@ -36,5 +36,5 @@ module.exports = [
     .withMessage('birthday can not be empty!')
     .isLength({ max: 30 })
     .withMessage("birthdayc can't be more than 30 characters!")
-    .trim(),
+    .trim()
 ]

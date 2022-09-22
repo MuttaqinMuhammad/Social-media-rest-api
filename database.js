@@ -6,7 +6,7 @@ const MONGO_URI = config.get('MONGO_URI')
 const database = async () => {
   await mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   })
   console.log('database connected!')
 }

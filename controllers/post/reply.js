@@ -9,7 +9,7 @@ const createReply = async (req, res, next) => {
   const reply = new Reply({
     body: req.body.body,
     user,
-    commentId,
+    commentId
   })
 
   try {
@@ -18,25 +18,25 @@ const createReply = async (req, res, next) => {
     const userReply = await reply.save()
     const updatedComment = await Comment.findOneAndUpdate(
       {
-        _id: commentId,
+        _id: commentId
       },
       {
         $push: {
-          replies: userReply._id,
-        },
+          replies: userReply._id
+        }
       },
       {
-        new: true,
-      },
+        new: true
+      }
     ).populate('user replies')
 
-if(updatedComment.user._id.toString()=== req.user._id.toString()){
-await notifyAllRepliers(req.user, updatedComment)
-return res.status(200).json({
-  success:true,
-  updatedComment,
-})
-}
+    if (updatedComment.user._id.toString() === req.user._id.toString()) {
+      await notifyAllRepliers(req.user, updatedComment)
+      return res.status(200).json({
+        success: true,
+        updatedComment
+      })
+    }
 
     const notification = await Notification.create({
       sender: user,
@@ -44,8 +44,8 @@ return res.status(200).json({
       event: 'reply',
       source: {
         sourceId: comment._id,
-        referance: 'Comment',
-      },
+        referance: 'Comment'
+      }
     })
     global.io.emit('Notification', notification)
 
@@ -53,7 +53,7 @@ return res.status(200).json({
 
     res.status(200).json({
       success: true,
-      userReply,
+      userReply
     })
   } catch (e) {
     next(e)
@@ -65,23 +65,23 @@ const editReply = async (req, res, next) => {
     const { replyId } = req.params
     const user = req.user._id
     const reply = await Reply.findOne({
-      replyId,
+      replyId
     })
     await Reply.updateOne(
       {
         _id: replyId,
-        user,
+        user
       },
       {
         $set: {
-          body: req.body.body,
-        },
-      },
+          body: req.body.body
+        }
+      }
     )
 
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
   } catch (error) {
     error.message = 'only comment createor can edit his comment'
@@ -95,25 +95,25 @@ const deleteReply = async (req, res, next) => {
     const { replyId } = req.params
     const reply = await Reply.findOne({
       _id: replyId,
-      user,
+      user
     })
     await Reply.deleteOne({
       _id: replyId,
-      user,
+      user
     })
     await Comment.updateOne(
       {
-        _id: reply.commentId,
+        _id: reply.commentId
       },
       {
         $pull: {
-          replies: reply._id,
-        },
-      },
+          replies: reply._id
+        }
+      }
     )
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
   } catch {
     const error = new Error('there was a server side error')
@@ -126,64 +126,64 @@ const like = async (req, res, next) => {
     const { replyId } = req.params
     const user = req.user._id
     const reply = await Reply.findOne({
-      _id: replyId,
+      _id: replyId
     })
 
     if (reply.dislikes.includes(user)) {
       await Reply.updateOne(
         {
-          _id: replyId,
+          _id: replyId
         },
         {
           $pull: {
-            dislikes: user,
-          },
-        },
+            dislikes: user
+          }
+        }
       )
     } else if (reply.likes.includes(user)) {
       await Reply.updateOne(
         {
-          _id: replyId,
+          _id: replyId
         },
         {
           $pull: {
-            likes: user,
-          },
-        },
+            likes: user
+          }
+        }
       )
 
       return res.status(200).json({
         success: true,
-        error: false,
+        error: false
       })
     }
 
     await Reply.updateOne(
       {
-        _id: replyId,
+        _id: replyId
       },
       {
         $push: {
-          likes: user,
-        },
-      },
+          likes: user
+        }
+      }
     )
-    if(reply.user.toString()!==user.toString()){
-    const notification = await Notification.create({
-      sender: req.user._id,
-      reciever: reply.user,
-      event: 'like',
-      source: {
-        sourceId: reply._id,
-        referance: 'Replie',
-      },
-    })
-    console.log(notification)
-    global.io.emit('Notification', notification)
-}
+    if (reply.user.toString() !== user.toString()) {
+      const notification = await Notification.create({
+        sender: req.user._id,
+        reciever: reply.user,
+        event: 'like',
+        source: {
+          sourceId: reply._id,
+          referance: 'Replie'
+        }
+      })
+      console.log(notification)
+      global.io.emit('Notification', notification)
+    }
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
   } catch {
     const error = new Error('there was a server side error')
@@ -196,52 +196,52 @@ const dislike = async (req, res, next) => {
     const { replyId } = req.params
     const user = req.user._id
     const reply = await Reply.findOne({
-      _id: replyId,
+      _id: replyId
     })
 
     if (reply.likes.includes(user)) {
       await Reply.updateOne(
         {
-          _id: replyId,
+          _id: replyId
         },
         {
           $pull: {
-            likes: user,
-          },
-        },
+            likes: user
+          }
+        }
       )
     } else if (reply.dislikes.includes(user)) {
       await Reply.updateOne(
         {
-          _id: replyId,
+          _id: replyId
         },
         {
           $pull: {
-            dislikes: user,
-          },
-        },
+            dislikes: user
+          }
+        }
       )
 
       return res.status(200).json({
         success: true,
-        error: false,
+        error: false
       })
     }
 
     await Reply.updateOne(
       {
-        _id: replyId,
+        _id: replyId
       },
       {
         $push: {
-          dislikes: user,
-        },
-      },
+          dislikes: user
+        }
+      }
     )
 
     res.status(200).json({
       success: true,
-      error: false,
+      error: false
     })
   } catch {
     const error = new Error('there was a server side error')
@@ -254,5 +254,5 @@ module.exports = {
   editReply,
   deleteReply,
   like,
-  dislike,
+  dislike
 }

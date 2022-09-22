@@ -18,6 +18,7 @@ const replyRoute = require('./routes/post/replyRoute')
 const securityRoute = require('./routes/securityRoute')
 const storyRoute = require('./routes/storyRoute')
 const notificationRoute = require('./routes/notificationRoute')
+const friendRoute = require('./routes/friendRoute')
 //middlewares
 const errorhandlers = require('./middlewares/common/errorHandler')
 const middlewares = require('./middlewares/middlewares')
@@ -34,6 +35,8 @@ app.use('/reply', replyRoute)
 app.use('/security', securityRoute)
 app.use('/story', storyRoute)
 app.use('/notification', notificationRoute)
+app.use('/friend', friendRoute)
+
 //using error handleling middlewares
 app.use(errorhandlers)
 

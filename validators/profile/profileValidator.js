@@ -12,5 +12,5 @@ module.exports = [
     .withMessage("occupation cant't be more than 30 characters"),
   check('worksAt')
     .isLength({ max: '40' })
-    .withMessage("worksAt cant't be more than 40 characters"),
+    .withMessage("worksAt cant't be more than 40 characters")
 ]

@@ -14,30 +14,30 @@ const createComment = async (req, res, next) => {
     const comment = new Comment({
       body: req.body.body,
       user,
-      postId,
+      postId
     })
 
     const userComment = await comment.save()
 
     const updatedPost = await Post.findOneAndUpdate(
       {
-        _id: postId,
+        _id: postId
       },
       {
         $push: {
-          comments: userComment._id,
-        },
+          comments: userComment._id
+        }
       },
       {
-        new: true,
-      },
+        new: true
+      }
     ).populate('comments')
 
     if (userComment.user.toString() === updatedPost.user.toString()) {
       await notifyAllCommentators(req.user, updatedPost)
       return res.status(200).json({
         success: true,
-        userComment,
+        userComment
       })
     }
 
@@ -47,13 +47,13 @@ const createComment = async (req, res, next) => {
       event: 'comment',
       source: {
         sourceId: postId,
-        referance: 'Post',
-      },
+        referance: 'Post'
+      }
     })
     global.io.emit('Notification', notification)
     res.status(200).json({
       success: true,
-      userComment,
+      userComment
     })
   } catch (e) {
     next(e)
@@ -67,24 +67,24 @@ const editComment = async (req, res, next) => {
   try {
     const comment = await Comment.findOne({
       _id: commentId,
-      user,
+      user
     })
     if (comment) {
       await Comment.updateOne(
         {
-          _id: commentId,
+          _id: commentId
         },
         {
           $set: {
-            body: req.body.body,
-          },
-        },
+            body: req.body.body
+          }
+        }
       )
     } else {
       throw new Error('only the creator can edit his comment')
     }
     res.status(200).json({
-      success: true,
+      success: true
     })
   } catch (e) {
     next(e)
@@ -97,27 +97,27 @@ const deleteComment = async (req, res, next) => {
   try {
     const comment = await Comment.findOne({
       _id: commentId,
-      user: req.user._id,
+      user: req.user._id
     })
     if (comment) {
       await Comment.deleteOne({
         _id: commentId,
-        user: req.user._id,
+        user: req.user._id
       })
       await Post.updateOne(
         {
-          _id: comment.postId,
+          _id: comment.postId
         },
         {
           $pull: {
-            comments: comment._id,
-          },
-        },
+            comments: comment._id
+          }
+        }
       )
       await Reply.deleteMany({ _id: { $in: comment.replies } })
 
       res.status(200).json({
-        success: true,
+        success: true
       })
     }
 
@@ -132,47 +132,47 @@ const like = async (req, res, next) => {
     const { commentId } = req.params
     const user = req.user._id
     const comment = await Comment.findOne({
-      _id: commentId,
+      _id: commentId
     })
 
     if (comment.dislikes.includes(user)) {
       await Comment.updateOne(
         {
-          _id: commentId,
+          _id: commentId
         },
         {
           $pull: {
-            dislikes: user,
-          },
-        },
+            dislikes: user
+          }
+        }
       )
     } else if (comment.likes.includes(user)) {
       await Comment.updateOne(
         {
-          _id: commentId,
+          _id: commentId
         },
         {
           $pull: {
-            likes: user,
-          },
-        },
+            likes: user
+          }
+        }
       )
 
       return res.status(200).json({
         success: true,
-        message:'like removed'
+        message: 'like removed'
       })
     }
 
     await Comment.updateOne(
       {
-        _id: commentId,
+        _id: commentId
       },
       {
         $push: {
-          likes: user,
-        },
-      },
+          likes: user
+        }
+      }
     )
 
     if (comment.user.toString() !== user.toString()) {
@@ -182,13 +182,13 @@ const like = async (req, res, next) => {
         event: 'like',
         source: {
           sourceId: comment._id,
-          referance: 'Comment',
-        },
+          referance: 'Comment'
+        }
       })
       global.io.emit('Notification', notification)
     }
     res.status(200).json({
-      success: true,
+      success: true
     })
   } catch {
     const error = new Error()
@@ -202,50 +202,50 @@ const dislike = async (req, res, next) => {
     const { commentId } = req.params
     const user = req.user._id
     const comment = await Comment.findOne({
-      _id: commentId,
+      _id: commentId
     })
 
     if (comment.likes.includes(user)) {
       await Comment.updateOne(
         {
-          _id: commentId,
+          _id: commentId
         },
         {
           $pull: {
-            likes: user,
-          },
-        },
+            likes: user
+          }
+        }
       )
     } else if (comment.dislikes.includes(user)) {
       await Comment.updateOne(
         {
-          _id: commentId,
+          _id: commentId
         },
         {
           $pull: {
-            dislikes: user,
-          },
-        },
+            dislikes: user
+          }
+        }
       )
 
       return res.status(200).json({
-        success: true,
+        success: true
       })
     }
 
     await Comment.updateOne(
       {
-        _id: commentId,
+        _id: commentId
       },
       {
         $push: {
-          dislikes: user,
-        },
-      },
+          dislikes: user
+        }
+      }
     )
 
     res.status(200).json({
-      success: true,
+      success: true
     })
   } catch {
     const error = new Error()
@@ -259,5 +259,5 @@ module.exports = {
   editComment,
   deleteComment,
   like,
-  dislike,
+  dislike
 }
