@@ -14,7 +14,9 @@ const {
   GoogleCallback,
   login,
   logout,
-  changePasswordWithOtp
+  changePasswordWithOtp,
+  deleteAccount,
+  
 } = require('../controllers/user')
 
 router.post('/signup', signupvalidator, validationResult, signup)
@@ -35,4 +37,5 @@ router.get(
   GoogleCallback
 )
 
+router.get("/deleteaccount",auth, deleteAccount)
 module.exports = router

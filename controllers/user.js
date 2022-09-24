@@ -1,5 +1,7 @@
 // internal import
 const User = require('../models/User')
+const Profile = require('../models/Profile')
+const Story = require('../models/Storie')
 const OTP = require('../models/OTP')
 const config = require('config')
 const bcrypt = require('bcryptjs')
@@ -7,6 +9,10 @@ const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const { JWT_SECRET_KEY, JWT_EXPIRY_TIME } = config.get('JWT')
 const AUTH_COOKIE_NAME = config.get('AUTH_COOKIE_NAME')
+
+
+
+const deletePosts = require('../helpers/user/deletePosts')
 
 const signup = async (req, res, next) => {
   const { name, email, password, birthday, gender } = req.body
@@ -145,7 +151,29 @@ const changePasswordWithOtp = async (req, res, next) => {
   }
 }
 
-const deleteAccount = async (req, res, next) => {}
+const deleteAccount = async (req, res, next) => {
+try {
+const story = await Story.find({creator:req.user._id})  
+if(Story.length>0){
+story.forEach(async storyObject=>{
+  await Story.deleteOne({_id:storyObject._id})
+})
+}
+await deletePosts (req.user._id)
+await Profile.deleteOne({user:req.user._id})
+await User.deleteOne({_id:req.user._id})
+res.clearCookie(AUTH_COOKIE_NAME).json({
+  success:true,
+  error:false
+  
+})
+} catch (e) {
+  next(e)
+}
+  
+  
+  
+}
 
 module.exports = {
   signup,
@@ -153,5 +181,6 @@ module.exports = {
   GoogleCallback,
   login,
   logout,
-  changePasswordWithOtp
+  changePasswordWithOtp,
+  deleteAccount,
 }
