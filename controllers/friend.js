@@ -1,13 +1,16 @@
 const User = require('../models/User')
 const Profile = require('../models/Profile')
 const Notification = require('../models/Notification')
+
+
 const followAndUnfollow = async (req, res, next) => {
   //profile id whom i want to follow
-  const { profileId } = req.params
+  const { userId } = req.params
   try {
     const profileToFollow = await Profile.findOne({
-      _id: profileId
+      user: userId
     })
+    const profileId = profileToFollow._id
 
     const loggedInUserProfile = await Profile.findOne({
       user: req.user._id
@@ -77,7 +80,7 @@ const followAndUnfollow = async (req, res, next) => {
       reciever: profileToFollow.user,
       event: 'follow',
       source: {
-        sourceId: profileToFollow._id,
+        sourceId: loggedInUserProfile._id,
         referance: 'Profile'
       }
     })
@@ -142,7 +145,9 @@ const addFriend = async (req, res, next) => {
       throw new Error('user not found')
     }
     const profile = await Profile.findOne({ user: userId })
-    if (!profile) throw new Error('user not found!')
+    const loggedInUserProfile = await Profile.findOne({user:req.user._id})
+    if (!profile) throw new Error('users profile doesnt exist!')
+if (profile.friends.includes(req.user._id))throw new Error('user is already in your friend list')
     if (profile.friendRequests.includes(req.user._id)) {
       await Profile.updateOne(
         { user: userId },
@@ -157,9 +162,7 @@ const addFriend = async (req, res, next) => {
         message: 'friend request canceled!'
       })
     }
-    if (profile.friends.includes(req.user._id)) {
-      throw new Error('user is already in your friend list')
-    }
+  
 
     await Profile.updateOne(
       { user: userId },
@@ -175,8 +178,8 @@ const addFriend = async (req, res, next) => {
       reciever: userId,
       event: 'friendRequest',
       source: {
-        sourceId: req.user._id,
-        referance: 'User'
+        sourceId: loggedInUserProfile._id,
+        referance: 'Profile'
       }
     })
     global.io.emit('Notification', notification)
@@ -230,8 +233,8 @@ const acceptFriendRequest = async (req, res, next) => {
       reciever: userId,
       event: 'acceptFriendRequest',
       source: {
-        sourceId: req.user._id,
-        referance: 'User'
+        sourceId: loggedInUserProfile._id,
+        referance: 'Profile'
       }
     })
     global.io.emit('Notification', notification)

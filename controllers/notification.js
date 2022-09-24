@@ -1,11 +1,12 @@
 const Notification = require('../models/Notification')
+const Profile = require('../models/Profile')
 const getSourceFromNotification = require('../helpers/notification/getSourceFromNotification')
 
 const showNotifications = async (req, res, next) => {
   try {
     const notifications = await Notification.find({
       reciever: req.user._id
-    }).populate('sourceId')
+    })
     if (notifications.length === 0) {
       return res.status(200).json({
         success: true,
@@ -23,17 +24,25 @@ const showNotifications = async (req, res, next) => {
 
 const viewSource = async (req, res, next) => {
   const { notificationId } = req.params
-  const supportedReferances = ['Post', 'Comment', 'Replie']
+
   try {
     const notification = await Notification.findOne({ _id: notificationId })
 
-    if (supportedReferances.includes(notification.source.referance)) {
+    if (['Post', 'Comment', 'Replie'].includes(notification.source.referance)) {
       const source = await getSourceFromNotification(notification)
       return res.status(200).json({
         success: true,
         source
       })
     }
+    if(notification.source.referance.toUpperCase()==="PROFILE"){
+const profile = await Profile.findOne({_id:notification.source.sourceId}).populate('followers friends following posts')
+return res.status(200).json({
+  success:true,
+  profile,
+})
+    }
+    
   } catch (e) {
     next(e)
   }

@@ -69,12 +69,6 @@ const profileSchema = new Schema(
         required: true
       }
     ],
-    bookmarks: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Post'
-      }
-    ]
   },
   {
     timestamps: true
