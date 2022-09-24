@@ -144,11 +144,9 @@ const editProfile = async (req, res, next) => {
   }
 }
 
-
 module.exports = {
   getMyProfile,
   getUserProfile,
   createProfile,
-  editProfile,
-
+  editProfile
 }

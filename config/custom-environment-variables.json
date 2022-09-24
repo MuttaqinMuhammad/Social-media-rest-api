@@ -1,5 +1,4 @@
 {
-  "MONGO_URI": "MONGO_URI",
   "cloudinary": {
     "CLOUD_NAME": "CLOUD_NAME",
     "API_KEY": "API_KEY",
@@ -8,5 +7,10 @@
   "nodemailer": {
     "SMTP_EMAIL": "SMTP_EMAIL",
     "SMTP_PASSWORD": "SMTP_PASSWORD"
+  },
+  "googleAuth":{
+  "googleClientId":"GOOGLE_CLIENT_ID",
+  "googleClientSecret":"GOOGLE_CLIENT_SECRET",
+  "callbackUrl":"CALLBACK_URL"
   }
 }

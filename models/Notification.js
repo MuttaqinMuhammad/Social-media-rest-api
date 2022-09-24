@@ -67,15 +67,14 @@ notificationSchema.pre('save', async function () {
     case 'FRIENDREQUEST':
       this.text = `${user.name} send you a friend request`
       break
-    
-      case 'ACCEPTFRIENDREQUEST':
+
+    case 'ACCEPTFRIENDREQUEST':
       this.text = `${user.name} accepted your friend request`
       break
-    
+
     case 'FOLLOW':
       this.text = `${user.name} started following you`
       break
-      
   }
 })
 

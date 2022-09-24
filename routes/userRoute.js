@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const passport = require('passport')
 //middlewares
 const auth = require('../middlewares/common/auth')
 const validationResult = require('../middlewares/common/validationResult')
@@ -9,6 +10,8 @@ const loginvalidator = require('../validators/user/login')
 
 const {
   signup,
+  signupWithGoogle,
+  GoogleCallback,
   login,
   logout,
   changePasswordWithOtp
@@ -18,5 +21,18 @@ router.post('/signup', signupvalidator, validationResult, signup)
 router.post('/login', loginvalidator, validationResult, login)
 router.delete('/logout', auth, logout)
 router.put('/newpassword', changePasswordWithOtp)
+
+//google oauth2
+router.get(
+  '/googleloginsignup',
+  passport.authenticate('google', { scope: ['email', 'profile'] }),
+  signupWithGoogle
+)
+
+router.get(
+  '/redirect',
+  passport.authenticate('google', { failureRedirect: '/user/login' }),
+  GoogleCallback
+)
 
 module.exports = router

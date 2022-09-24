@@ -4,14 +4,13 @@ const OTP = require('../models/OTP')
 const config = require('config')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
+const passport = require('passport')
 const { JWT_SECRET_KEY, JWT_EXPIRY_TIME } = config.get('JWT')
 const AUTH_COOKIE_NAME = config.get('AUTH_COOKIE_NAME')
 
 const signup = async (req, res, next) => {
   const { name, email, password, birthday, gender } = req.body
   const hashedPassword = await bcrypt.hash(password, 10)
-  console.log(hashedPassword)
   const user = new User({
     name,
     email,
@@ -25,6 +24,40 @@ const signup = async (req, res, next) => {
     res.status(200).json({
       success: true,
       newUser
+    })
+  } catch (e) {
+    next(e)
+  }
+}
+
+const signupWithGoogle = async (req, res, next) => {
+  res.sendStatus(200)
+}
+
+const GoogleCallback = async (req, res, next) => {
+  try {
+    if (!req.user._id) {
+      throw new Error('internal server error')
+    }
+    const token = jwt.sign(
+      {
+        userId: req.user._id
+      },
+      JWT_SECRET_KEY,
+      {
+        expiresIn: JWT_EXPIRY_TIME
+      }
+    )
+
+    res.cookie(AUTH_COOKIE_NAME, token, {
+      httpOnly: true,
+      signed: true,
+      maxAge: 86400000
+    })
+    res.status(200).json({
+      success: true,
+      user: req.user,
+      token
     })
   } catch (e) {
     next(e)
@@ -112,13 +145,12 @@ const changePasswordWithOtp = async (req, res, next) => {
   }
 }
 
-const deleteAccount = async (req,res,next)=>{
-  
-}
-
+const deleteAccount = async (req, res, next) => {}
 
 module.exports = {
   signup,
+  signupWithGoogle,
+  GoogleCallback,
   login,
   logout,
   changePasswordWithOtp

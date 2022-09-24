@@ -3,6 +3,11 @@ const { Schema, model } = require('mongoose')
 
 const userSchema = new Schema(
   {
+    provider: {
+      name: String,
+      id: String,
+      verified: Boolean
+    },
     name: {
       type: String,
       required: true,
@@ -22,13 +27,11 @@ const userSchema = new Schema(
 
     password: {
       type: String,
-      required: true,
       select: false,
       trim: true
     },
     birthday: {
-      type: String,
-      required: true
+      type: String
     },
 
     gender: {

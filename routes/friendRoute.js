@@ -18,7 +18,4 @@ router.get('/unfriend/:userId', auth, unfriend)
 router.get('/acceptrequest/:userId', auth, acceptFriendRequest)
 router.get('/deletefriendrequest/:userId', auth, deleteFriendRequest)
 
-
-
-
 module.exports = router

@@ -2,8 +2,6 @@
 Description: This module exports an array of error handleing function. app.JS will use this function to handle errors.
 */
 
-const colors = require('colors/safe')
-
 const errorHandler = (err, req, res, next) => {
   if (res.headerSent) {
     return next(err)
@@ -15,7 +13,7 @@ const errorHandler = (err, req, res, next) => {
     })
   }
 
-  console.log(colors.bold.brightRed(err))
+  console.log(err)
   res.status(500).json({
     success: false,
     error: err.message

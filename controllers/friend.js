@@ -142,7 +142,7 @@ const addFriend = async (req, res, next) => {
       throw new Error('user not found')
     }
     const profile = await Profile.findOne({ user: userId })
-    if(!profile)throw new Error('user not found!')
+    if (!profile) throw new Error('user not found!')
     if (profile.friendRequests.includes(req.user._id)) {
       await Profile.updateOne(
         { user: userId },
@@ -169,18 +169,18 @@ const addFriend = async (req, res, next) => {
         }
       }
     )
-    
-        const notification = await Notification.create({
+
+    const notification = await Notification.create({
       sender: req.user._id,
       reciever: userId,
       event: 'friendRequest',
       source: {
-        sourceId:req.user._id,
+        sourceId: req.user._id,
         referance: 'User'
       }
     })
     global.io.emit('Notification', notification)
-    
+
     res.status(200).json({
       success: true,
       message: 'friend request send'
@@ -199,7 +199,7 @@ const acceptFriendRequest = async (req, res, next) => {
     if (!loggedInUserProfile.friendRequests.includes(userId)) {
       throw new Error('no friend request found!')
     }
-if(!requestSenderProfile)throw new Error('user not found!')
+    if (!requestSenderProfile) throw new Error('user not found!')
     await Profile.updateOne(
       { user: req.user._id },
       {
@@ -225,17 +225,16 @@ if(!requestSenderProfile)throw new Error('user not found!')
       }
     )
 
-     const notification = await Notification.create({
+    const notification = await Notification.create({
       sender: req.user._id,
       reciever: userId,
       event: 'acceptFriendRequest',
       source: {
-        sourceId:req.user._id,
+        sourceId: req.user._id,
         referance: 'User'
       }
     })
     global.io.emit('Notification', notification)
-   
 
     res.status(200).json({
       success: true,
@@ -322,4 +321,3 @@ module.exports = {
   acceptFriendRequest,
   deleteFriendRequest
 }
-

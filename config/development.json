@@ -1,10 +1,10 @@
 {
   "port": 4000,
+  "MONGO_URI":"mongodb://localhost:27017/social_media_app",
   "COOKIE_SECRET_KEY": "MuttaqinMuhammad",
   "AUTH_COOKIE_NAME": "social_media",
   "JWT": {
     "JWT_SECRET_KEY": "MuttaqinMuhammad",
     "JWT_EXPIRY_TIME": "1d"
   }
-  
 }
