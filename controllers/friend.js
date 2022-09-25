@@ -141,7 +141,7 @@ const addFriend = async (req, res, next) => {
   const { userId } = req.params
 
   try {
-    if (req.user._id.toString() === userId.toString()) {
+    if (req.user._id.toString() === userId.toString()) { //checking if the user is not sending friend requests to himself.
       throw new Error('user not found')
     }
     const profile = await Profile.findOne({ user: userId })
@@ -172,7 +172,11 @@ if (profile.friends.includes(req.user._id))throw new Error('user is already in y
         }
       }
     )
-
+    await Profile.updateOne({_id:loggedInUserProfile._id},{
+      $push:{
+        sendedFriendRequests: userId
+      }
+    })
     const notification = await Notification.create({
       sender: req.user._id,
       reciever: userId,
@@ -216,6 +220,14 @@ const acceptFriendRequest = async (req, res, next) => {
       {
         $push: {
           friends: req.user._id
+        }
+      }
+    )
+    await Profile.updateOne(
+      { user: userId },
+      {
+        $pull: {
+          sendedFriendRequests: req.user._id
         }
       }
     )

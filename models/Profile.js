@@ -45,7 +45,13 @@ const profileSchema = new Schema(
     friendRequests: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'FriendRequest'
+        ref: 'User'
+      }
+    ],
+    sendedFriendRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
       }
     ],
     followers: [

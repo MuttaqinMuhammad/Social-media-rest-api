@@ -105,7 +105,8 @@ const login = async (req, res, next) => {
       }
     }
   } catch (e) {
-    next('Access denied')
+    e.message = "Access denied!"
+    next(e)
   }
 }
 
@@ -162,6 +163,10 @@ story.forEach(async storyObject=>{
 await deletePosts (req.user._id)
 await Profile.deleteOne({user:req.user._id})
 await User.deleteOne({_id:req.user._id})
+
+//unfriend all friends.
+// remove all the pending friend requests which user sended others.
+//remove all friend requests
 res.clearCookie(AUTH_COOKIE_NAME).json({
   success:true,
   error:false

@@ -6,6 +6,9 @@ const Profile = require('../../models/Profile')
 const Reply = require('../../models/post/Replie')
 const Notification = require('../../models/Notification')
 
+//helpers
+const friendsAndFollowingPosts = require('../../helpers/post/FriendsAndFollowingPosts')
+
 
 /*
 Description: this function takes a user id .search profile and returns all the user posts
@@ -35,16 +38,12 @@ Description: this function takes a user id .search profile and returns all the u
 */
 const getUserPosts = async (req, res, next) => {
   const userPostsArray = []
-
+  const user = req.user._id
   try {
-    const { posts } = await Profile.findOne({ user: req.params.userId })
-    for (let post of posts) {
-      let myPost = await Post.findOne({ _id: post }).populate(
-        'likes dislikes user comments'
-      )
-      userPostsArray.push(myPost)
-    }
-
+    const getPublicPosts = await Post.find({privicy:'public'})
+    const getFriendsAndFollowingPosts = friendsAndFollowingPosts(user)
+userPostsArray.concat(getPublicPosts)
+userPostsArray.concat(getFriendsAndFollowingPosts)
     res.status(200).json({
       success: true,
       userPostsArray
@@ -64,7 +63,8 @@ const createPost = async (req, res, next) => {
   const post = new Post({
     user: req.user._id,
     caption,
-    body
+    body,
+    privicy,
   })
   try {
     if (req.file) {
