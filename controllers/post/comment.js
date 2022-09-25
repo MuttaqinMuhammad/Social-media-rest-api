@@ -4,8 +4,6 @@ const Reply = require('../../models/post/Replie')
 const Notification = require('../../models/Notification')
 const notifyAllCommentators = require('../../helpers/notification/notifyAllCommentators')
 
-
-
 /*
 Description: this function takes a  post id and add a comment on the post.takes the comment from req.body.
 */
@@ -16,17 +14,18 @@ const createComment = async (req, res, next) => {
   try {
     //searching the post.
     const post = await Post.findOne({ _id: postId })
-//checking the post if the post doesnt exist throw a Error.
+    //checking the post if the post doesnt exist throw a Error.
     if (!post) throw new Error('no post exist to comment!')
-//creating comment 
+
     const comment = new Comment({
+      //creating comment
       body: req.body.body,
       user,
       postId
     })
-//saving the comment
-    const userComment = await comment.save()
-//pushing the comment id inside the post (comments Array).and  populating all comments
+
+    const userComment = await comment.save() //saving the comment
+    //pushing the comment id inside the post (comments Array). and  populating all comments
     const updatedPost = await Post.findOneAndUpdate(
       {
         _id: postId
@@ -41,16 +40,15 @@ const createComment = async (req, res, next) => {
       }
     ).populate('comments')
 
-//if the  post author comments  his post. and the post have other commentators. then all the other commentators will be notified that " (author name) also commented on his post"
+    //if the  post author comments  his post. and the post have other commentators. then all the other commentators will be notified that " (author name) also commented on his post"
 
-
-/*
+    /*
 Function name: notifyAllCommentators
 Description: this Function takes the post and the post auther .after that this Function finds all the commentators and create a Notification for each of them.
 */
-//checking if the user is  the  post author
+    //checking if the user is  the  post author
     if (userComment.user.toString() === updatedPost.user.toString()) {
-//notifing all the other commentators.
+      //notifing all the other commentators.
       await notifyAllCommentators(req.user, updatedPost)
       return res.status(200).json({
         success: true,
@@ -58,7 +56,7 @@ Description: this Function takes the post and the post auther .after that this F
       })
     }
 
-//i the comment creator is not the post author the .a single notification sended to the post author that " (commentator name) commented on your post "
+    //i the comment creator is not the post author the .a single notification sended to the post author that " (commentator name) commented on your post "
     const notification = await Notification.create({
       sender: req.user._id,
       reciever: post.user,
@@ -132,12 +130,13 @@ const deleteComment = async (req, res, next) => {
     //checking if the comment exist. otherwise throw error
     if (comment) {
       await Comment.deleteOne({
+        //deleting the comment
         _id: commentId,
         user: req.user._id
       })
       await Post.updateOne(
         {
-          _id: comment.postId
+          _id: comment.postId //removing the comment id from the post
         },
         {
           $pull: {
@@ -145,10 +144,11 @@ const deleteComment = async (req, res, next) => {
           }
         }
       )
-      await Reply.deleteMany({ _id: { $in: comment.replies } })
+      await Reply.deleteMany({ _id: { $in: comment.replies } }) //deleting all the replies.
 
       res.status(200).json({
-        success: true
+        success: true,
+        error: false
       })
     }
 
@@ -165,12 +165,12 @@ const like = async (req, res, next) => {
   try {
     const { commentId } = req.params
     const user = req.user._id
-//searching the comment
+    //searching the comment
     const comment = await Comment.findOne({
       _id: commentId
     })
-    if(!comment)throw new Error('no comment exist!')
-//checking if the user already disliked the Function.if the user already disliked the comment the the dislike will be removed .
+    if (!comment) throw new Error('no comment exist!')
+    //checking if the user already disliked the Function.if the user already disliked the comment the the dislike will be removed .
     if (comment.dislikes.includes(user)) {
       await Comment.updateOne(
         {
@@ -182,7 +182,8 @@ const like = async (req, res, next) => {
           }
         }
       )
-    } else if (comment.likes.includes(user)) { //if the user already liked the post then the like will be removed.
+    } else if (comment.likes.includes(user)) {
+      //if the user already liked the post then the like will be removed.
       await Comment.updateOne(
         {
           _id: commentId
@@ -199,7 +200,7 @@ const like = async (req, res, next) => {
         message: 'like removed'
       })
     }
-// finally pushing the user id inside (likes Array) of comment.
+    // finally pushing the user id inside (likes Array) of comment.
     await Comment.updateOne(
       {
         _id: commentId
@@ -211,7 +212,7 @@ const like = async (req, res, next) => {
       }
     )
 
-//notifing the post auther that (user name) liked your comment.
+    //notifing the post auther that (user name) liked your comment.
     if (comment.user.toString() !== user.toString()) {
       const notification = await Notification.create({
         sender: user,
@@ -234,7 +235,6 @@ const like = async (req, res, next) => {
   }
 }
 
-
 /*
 Description: this Function dislikes a comment .if the user already disliked the comment then dislike is removed
 */
@@ -242,12 +242,12 @@ const dislike = async (req, res, next) => {
   try {
     const { commentId } = req.params
     const user = req.user._id
-//searching the comment.
+    //searching the comment.
     const comment = await Comment.findOne({
       _id: commentId
     })
-    if(!comment)throw new Error('no comment exist!')
-//checking if the user have liked the comment .if liked then the like will be removed.
+    if (!comment) throw new Error('no comment exist!')
+    //checking if the user have liked the comment .if liked then the like will be removed.
     if (comment.likes.includes(user)) {
       await Comment.updateOne(
         {
@@ -259,7 +259,8 @@ const dislike = async (req, res, next) => {
           }
         }
       )
-    } else if (comment.dislikes.includes(user)) {  //checking if the user already dislike the post if disliked the dislike will be removed.
+    } else if (comment.dislikes.includes(user)) {
+      //checking if the user already dislike the post if disliked the dislike will be removed.
       await Comment.updateOne(
         {
           _id: commentId
@@ -276,7 +277,7 @@ const dislike = async (req, res, next) => {
       })
     }
 
-//finally pushing the dislike inside the comment(dislikes Array).
+    //finally pushing the dislike inside the comment(dislikes Array).
     await Comment.updateOne(
       {
         _id: commentId
@@ -297,7 +298,6 @@ const dislike = async (req, res, next) => {
     next(error)
   }
 }
-
 
 //exporting all the functions
 module.exports = {

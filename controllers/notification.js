@@ -35,14 +35,15 @@ const viewSource = async (req, res, next) => {
         source
       })
     }
-    if(notification.source.referance.toUpperCase()==="PROFILE"){
-const profile = await Profile.findOne({_id:notification.source.sourceId}).populate('followers friends following posts')
-return res.status(200).json({
-  success:true,
-  profile,
-})
+    if (notification.source.referance.toUpperCase() === 'PROFILE') {
+      const profile = await Profile.findOne({
+        _id: notification.source.sourceId
+      }).populate('followers friends following posts')
+      return res.status(200).json({
+        success: true,
+        profile
+      })
     }
-    
   } catch (e) {
     next(e)
   }

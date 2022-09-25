@@ -23,11 +23,11 @@ const postSchema = new Schema(
       public_id: String,
       url: String
     },
-    privicy:{
-      type:String,
-      required:true,
-      default:'friends',
-      enum:['public', 'private', 'friends']
+    privicy: {
+      type: String,
+      required: true,
+      default: 'friends',
+      enum: ['public', 'private', 'friends']
     },
     comments: [
       {

@@ -2,23 +2,23 @@ const User = require('../models/User')
 const Profile = require('../models/Profile')
 const Notification = require('../models/Notification')
 
-
 const followAndUnfollow = async (req, res, next) => {
   //profile id whom i want to follow
   const { userId } = req.params
   try {
     const profileToFollow = await Profile.findOne({
+      //searching the profile
       user: userId
     })
     const profileId = profileToFollow._id
 
     const loggedInUserProfile = await Profile.findOne({
       user: req.user._id
-    })
+    }) //searching the logged in user profile
 
     if (
-      !profileToFollow &&
-      !loggedInUserProfile &&
+      !profileToFollow ||
+      !loggedInUserProfile ||
       profileToFollow.user.toString() === loggedInUserProfile.user.toString()
     ) {
       throw new Error('profile deesnt exist!')
@@ -31,7 +31,7 @@ const followAndUnfollow = async (req, res, next) => {
         },
         {
           $pull: {
-            followers: req.user._id
+            followers: req.user._id //unfollowing the user.
           }
         }
       )
@@ -74,7 +74,7 @@ const followAndUnfollow = async (req, res, next) => {
         }
       }
     )
-
+    //creating a notification
     const notification = await Notification.create({
       sender: req.user._id,
       reciever: profileToFollow.user,
@@ -86,7 +86,7 @@ const followAndUnfollow = async (req, res, next) => {
     })
     global.io.emit('Notification', notification)
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: 'user followed successfully'
     })
@@ -100,14 +100,14 @@ const FriendList = async (req, res, next) => {
     const loggedInUser = req.user._id
     const profile = await Profile.findOne({ user: loggedInUser }).populate(
       'friends'
-    )
+    ) //populating all the friends
     if (!profile) {
       throw new Error('you have to create a profile first')
     }
     if (profile.friends.length <= 0) {
       return res.status(200).json({
         success: true,
-        friends: ' Your friend list is empty!'
+        friends: 'Your friend list is empty!'
       })
     }
     res.status(200).json({
@@ -141,13 +141,15 @@ const addFriend = async (req, res, next) => {
   const { userId } = req.params
 
   try {
-    if (req.user._id.toString() === userId.toString()) { //checking if the user is not sending friend requests to himself.
+    if (req.user._id.toString() === userId.toString()) {
+      //checking if the user is not sending friend requests to himself.
       throw new Error('user not found')
     }
     const profile = await Profile.findOne({ user: userId })
-    const loggedInUserProfile = await Profile.findOne({user:req.user._id})
+    const loggedInUserProfile = await Profile.findOne({ user: req.user._id })
     if (!profile) throw new Error('users profile doesnt exist!')
-if (profile.friends.includes(req.user._id))throw new Error('user is already in your friend list')
+    if (profile.friends.includes(req.user._id))
+      throw new Error('user is already in your friend list')
     if (profile.friendRequests.includes(req.user._id)) {
       await Profile.updateOne(
         { user: userId },
@@ -162,7 +164,6 @@ if (profile.friends.includes(req.user._id))throw new Error('user is already in y
         message: 'friend request canceled!'
       })
     }
-  
 
     await Profile.updateOne(
       { user: userId },
@@ -172,11 +173,14 @@ if (profile.friends.includes(req.user._id))throw new Error('user is already in y
         }
       }
     )
-    await Profile.updateOne({_id:loggedInUserProfile._id},{
-      $push:{
-        sendedFriendRequests: userId
+    await Profile.updateOne(
+      { _id: loggedInUserProfile._id },
+      {
+        $push: {
+          sendedFriendRequests: userId
+        }
       }
-    })
+    )
     const notification = await Notification.create({
       sender: req.user._id,
       reciever: userId,

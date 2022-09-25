@@ -7,7 +7,7 @@ module.exports = (story) =>
       const { name, user, friends } = await Profile.findOne({
         user: story.creator
       })
-      if (friends.length <= 0) return null
+      if (friends.length <= 0) resolve(true)
       friends.forEach(async (userId) => {
         const notification = await Notification.create({
           sender: user,

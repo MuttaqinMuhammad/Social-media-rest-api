@@ -7,7 +7,7 @@ const postValidator = require('../../validators/post/postValidator')
 const validationResult = require('../../middlewares/common/validationResult')
 const {
   getMyPosts,
-  getUserPosts,
+  getPosts,
   createPost,
   editPost,
   deletePost,
@@ -15,8 +15,6 @@ const {
   dislike
 } = require('../../controllers/post/post')
 
-router.get('/', auth, getMyPosts)
-router.get('/:userId', auth, getUserPosts)
 router.post(
   '/create',
   auth,
@@ -36,5 +34,7 @@ router.post(
 router.delete('/delete/:postId', auth, deletePost)
 router.post('/like/:postId', auth, like)
 router.post('/dislike/:postId', auth, dislike)
+router.get('/my', auth, getMyPosts)
+router.get('/', auth, getPosts)
 
 module.exports = router

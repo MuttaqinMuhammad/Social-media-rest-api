@@ -9,7 +9,6 @@ const Notification = require('../../models/Notification')
 //helpers
 const friendsAndFollowingPosts = require('../../helpers/post/FriendsAndFollowingPosts')
 
-
 /*
 Description: this function takes a user id .search profile and returns all the user posts
 */
@@ -36,14 +35,22 @@ const getMyPosts = async (req, res, next) => {
 /*
 Description: this function takes a user id .search profile and returns all the user posts
 */
-const getUserPosts = async (req, res, next) => {
+const getPosts = async (req, res, next) => {
   const userPostsArray = []
   const user = req.user._id
   try {
-    const getPublicPosts = await Post.find({privicy:'public'})
+    const loggedInUserProfile = await Profile.findOne({
+      user: req.user._id
+    }).populate('posts')
+    const loggedInUserPosts = loggedInUserProfile.posts.filter(
+      (post) => post.privicy.toUpperCase() !== 'PRIVATE'
+    )
+
+    const getPublicPosts = await Post.find({ privicy: 'public' })
     const getFriendsAndFollowingPosts = friendsAndFollowingPosts(user)
-userPostsArray.concat(getPublicPosts)
-userPostsArray.concat(getFriendsAndFollowingPosts)
+    userPostsArray.push(...getPublicPosts)
+    userPostsArray.push(...getFriendsAndFollowingPosts)
+    userPostsArray.push(...loggedInUserPosts)
     res.status(200).json({
       success: true,
       userPostsArray
@@ -57,14 +64,13 @@ userPostsArray.concat(getFriendsAndFollowingPosts)
 Description: this function takes caption and body from req.body and creates a  post.
 */
 
-
 const createPost = async (req, res, next) => {
   const { caption, body } = req.body
   const post = new Post({
     user: req.user._id,
     caption,
     body,
-    privicy,
+    privicy
   })
   try {
     if (req.file) {
@@ -77,7 +83,7 @@ const createPost = async (req, res, next) => {
     }
 
     const newPost = await post.save()
-//pushing the post id in user profile .
+    //pushing the post id in user profile .
     await Profile.updateOne(
       {
         user: req.user._id
@@ -113,12 +119,13 @@ const editPost = async (req, res, next) => {
     if (verifyAuthor) {
       if (req.file) {
         if (verifyAuthor.image) {
+          //deleting the existing image.
           await cloudinary.uploader.destroy(verifyAuthor.image.public_id)
         }
-        const result = await cloudinary.uploader.upload(req.file.path)
+        const result = await cloudinary.uploader.upload(req.file.path) //updating the image
 
         const { secure_url, public_id } = result
-//updating the image.
+        //updating the image.
         await Post.updateOne(
           { _id: postId },
           {
@@ -131,7 +138,7 @@ const editPost = async (req, res, next) => {
           }
         )
       }
-// updating the post caption and body
+      // updating the post caption and body
       const post = await Post.updateOne(
         {
           _id: postId
@@ -163,14 +170,14 @@ const deletePost = async (req, res, next) => {
     const post = await Post.findOne({
       _id: postId
     })
-//deleting post
+    //deleting post
     await Post.deleteOne({
       _id: postId,
       user: req.user._id
     })
     //deleting post image
     await cloudinary.uploader.destroy(post.image.public_id)
-//removing the post id from user profile 
+    //removing the post id from user profile (Posts Array)
     await Profile.updateOne(
       {
         user: req.user._id
@@ -182,11 +189,11 @@ const deletePost = async (req, res, next) => {
       }
     )
 
-/*
+    /*
 function name: removeChilds
  Description: this function takes a single post Object and finds every comments and replies and delete those.
 */
-Post.removeChilds(post)
+    Post.removeChilds(post)
 
     res.status(200).json({
       success: true,
@@ -218,7 +225,7 @@ const like = async (req, res, next) => {
         },
         {
           $pull: {
-            dislikes: user
+            dislikes: user //removing the dislike
           }
         }
       )
@@ -229,7 +236,7 @@ const like = async (req, res, next) => {
         },
         {
           $pull: {
-            likes: user
+            likes: user //removing the like
           }
         }
       )
@@ -245,13 +252,14 @@ const like = async (req, res, next) => {
       },
       {
         $push: {
-          likes: user
+          likes: user //adding the like
         }
       }
     )
 
     if (post.user.toString() !== user.toString()) {
       const notification = await Notification.create({
+        //creating a notification
         sender: req.user._id,
         reciever: post.user,
         event: 'like',
@@ -288,7 +296,7 @@ const dislike = async (req, res, next) => {
         },
         {
           $pull: {
-            likes: user
+            likes: user //removing the like.
           }
         }
       )
@@ -299,7 +307,7 @@ const dislike = async (req, res, next) => {
         },
         {
           $pull: {
-            dislikes: user
+            dislikes: user //removing the dislike.
           }
         }
       )
@@ -316,7 +324,7 @@ const dislike = async (req, res, next) => {
       },
       {
         $push: {
-          dislikes: user
+          dislikes: user //adding the like
         }
       }
     )
@@ -335,7 +343,7 @@ const dislike = async (req, res, next) => {
 //exporting all he functions
 module.exports = {
   getMyPosts,
-  getUserPosts,
+  getPosts,
   createPost,
   editPost,
   deletePost,

@@ -24,8 +24,7 @@ const sendOtp = async (req, res, next) => {
       await otp.save()
       const mailParam = {
         title: `your ${APP_NAME} OTP `,
-        body: `Here is your OTP:${randomOTP} for the response your forget password request.
-  please dont share this to anyone . this token will be expired in   munites.`,
+        body: `Here is your OTP:${randomOTP}. please dont share this to anyone . this token will be expired in 10 munites.`,
         emailReciever: email
       }
       const sendMailToUser = sendMail(mailParam)

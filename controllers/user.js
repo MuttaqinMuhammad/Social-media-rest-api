@@ -10,8 +10,6 @@ const passport = require('passport')
 const { JWT_SECRET_KEY, JWT_EXPIRY_TIME } = config.get('JWT')
 const AUTH_COOKIE_NAME = config.get('AUTH_COOKIE_NAME')
 
-
-
 const deletePosts = require('../helpers/user/deletePosts')
 
 const signup = async (req, res, next) => {
@@ -105,7 +103,7 @@ const login = async (req, res, next) => {
       }
     }
   } catch (e) {
-    e.message = "Access denied!"
+    e.message = 'Access denied!'
     next(e)
   }
 }
@@ -153,31 +151,27 @@ const changePasswordWithOtp = async (req, res, next) => {
 }
 
 const deleteAccount = async (req, res, next) => {
-try {
-const story = await Story.find({creator:req.user._id})  
-if(Story.length>0){
-story.forEach(async storyObject=>{
-  await Story.deleteOne({_id:storyObject._id})
-})
-}
-await deletePosts (req.user._id)
-await Profile.deleteOne({user:req.user._id})
-await User.deleteOne({_id:req.user._id})
+  try {
+    const story = await Story.find({ creator: req.user._id })
+    if (Story.length > 0) {
+      story.forEach(async (storyObject) => {
+        await Story.deleteOne({ _id: storyObject._id })
+      })
+    }
+    await deletePosts(req.user._id)
+    await Profile.deleteOne({ user: req.user._id })
+    await User.deleteOne({ _id: req.user._id })
 
-//unfriend all friends.
-// remove all the pending friend requests which user sended others.
-//remove all friend requests
-res.clearCookie(AUTH_COOKIE_NAME).json({
-  success:true,
-  error:false
-  
-})
-} catch (e) {
-  next(e)
-}
-  
-  
-  
+    //unfriend all friends.
+    // remove all the pending friend requests which user sended others.
+    //remove all friend requests
+    res.clearCookie(AUTH_COOKIE_NAME).json({
+      success: true,
+      error: false
+    })
+  } catch (e) {
+    next(e)
+  }
 }
 
 module.exports = {
@@ -187,5 +181,5 @@ module.exports = {
   login,
   logout,
   changePasswordWithOtp,
-  deleteAccount,
+  deleteAccount
 }

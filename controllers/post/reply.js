@@ -5,8 +5,6 @@ const Notification = require('../../models/Notification')
 //helpers
 const notifyAllRepliers = require('../../helpers/notification/notifyAllrepliers')
 
-
-
 /*
 Description: this function takes a comment id and creates a reply.
 */
@@ -22,11 +20,11 @@ const createReply = async (req, res, next) => {
   try {
     //searching the comment.
     const comment = await Comment.findOne({ _id: commentId })
-//throwing an error if the comment doesnt exist.
+    //throwing an error if the comment doesnt exist.
     if (!comment) throw new Error('comment doesnt exist to reply!')
-  //saving the reply.
+    //saving the reply.
     const userReply = await reply.save()
-  //pushing the reply inside the comment (replies Array).
+    //pushing the reply inside the comment (replies Array).
     const updatedComment = await Comment.findOneAndUpdate(
       {
         _id: commentId
@@ -40,9 +38,9 @@ const createReply = async (req, res, next) => {
         new: true
       }
     ).populate('user replies')
-//if the comment creator is the person who replied the comment.notify all the other person tho replied the comment.
+    //if the comment creator is the person who replied the comment.notify all the other person tho replied the comment.
 
-/*
+    /*
 Function name: notifyAllRepliers
 Description: this Function takes the comment and the comment creator. finds all the other persons who replied the comment and notify them all.
 */
@@ -55,7 +53,7 @@ Description: this Function takes the comment and the comment creator. finds all 
       })
     }
 
-//if the person is not the comment creator .also the other persons will be notified.
+    //if the person is not the comment creator .also the other persons will be notified.
     const notification = await Notification.create({
       sender: user,
       reciever: comment.user,
@@ -85,12 +83,12 @@ const editReply = async (req, res, next) => {
   try {
     const { replyId } = req.params
     const user = req.user._id
-  //searching the reply.
+    //searching the reply.
     const reply = await Reply.findOne({
       replyId
     })
-//throwing error if no reply found.
-    if(!reply)throw new Error('no reply found!')
+    //throwing error if no reply found.
+    if (!reply) throw new Error('no reply found!')
     //updating the reply.
     await Reply.updateOne(
       {
@@ -123,13 +121,13 @@ const deleteReply = async (req, res, next) => {
       _id: replyId,
       user
     }) //searching the reply
-    if(!reply)throw new Error('no reply found') //throwing an error if no reply exist.
+    if (!reply) throw new Error('no reply found') //throwing an error if no reply exist.
     //deleting the reply
     await Reply.deleteOne({
       _id: replyId,
       user
-    }) 
-//removing the id from comments(reply Array)
+    })
+    //removing the id from comments(reply Array)
     await Comment.updateOne(
       {
         _id: reply.commentId
@@ -156,30 +154,33 @@ const like = async (req, res, next) => {
   try {
     const { replyId } = req.params
     const user = req.user._id
-    
-  const reply = await Reply.findOne({ //searching the reply
+
+    const reply = await Reply.findOne({
+      //searching the reply
       _id: replyId
     })
-if(!reply)throw new Error('no reply found')//throwing error if no reply found.
-    if (reply.dislikes.includes(user)) { //checks the user already dislikes the reply
+    if (!reply) throw new Error('no reply found') //throwing error if no reply found.
+    if (reply.dislikes.includes(user)) {
+      //checks the user already dislikes the reply
       await Reply.updateOne(
         {
           _id: replyId
         },
         {
           $pull: {
-            dislikes: user        //removing the dislike
+            dislikes: user //removing the dislike
           }
         }
       )
-    } else if (reply.likes.includes(user)) { //checks if the user already liked the reply
+    } else if (reply.likes.includes(user)) {
+      //checks if the user already liked the reply
       await Reply.updateOne(
         {
           _id: replyId
         },
         {
           $pull: {
-            likes: user         //removing the like.
+            likes: user //removing the like.
           }
         }
       )
@@ -189,7 +190,7 @@ if(!reply)throw new Error('no reply found')//throwing error if no reply found.
         error: false
       })
     }
-//finally push the user to the likes array.
+    //finally push the user to the likes array.
     await Reply.updateOne(
       {
         _id: replyId
@@ -200,7 +201,7 @@ if(!reply)throw new Error('no reply found')//throwing error if no reply found.
         }
       }
     )
-//notifying the comment creator.
+    //notifying the comment creator.
     if (reply.user.toString() !== user.toString()) {
       const notification = await Notification.create({
         sender: req.user._id,
@@ -228,22 +229,25 @@ const dislike = async (req, res, next) => {
   try {
     const { replyId } = req.params
     const user = req.user._id
-    const reply = await Reply.findOne({ //searching the reply
+    const reply = await Reply.findOne({
+      //searching the reply
       _id: replyId
     })
-if(!reply)throw new Error('no reply found')
-    if (reply.likes.includes(user)) { //checking if the user already liked the reply
+    if (!reply) throw new Error('no reply found')
+    if (reply.likes.includes(user)) {
+      //checking if the user already liked the reply
       await Reply.updateOne(
         {
-          _id: replyId 
+          _id: replyId
         },
         {
           $pull: {
-            likes: user     //removing the like
+            likes: user //removing the like
           }
         }
       )
-    } else if (reply.dislikes.includes(user)) {//checking if the user already disliked the reply.
+    } else if (reply.dislikes.includes(user)) {
+      //checking if the user already disliked the reply.
       await Reply.updateOne(
         {
           _id: replyId
@@ -261,14 +265,14 @@ if(!reply)throw new Error('no reply found')
       })
     }
 
-//finally pushing the userid to the dislikes array
+    //finally pushing the userid to the dislikes array
     await Reply.updateOne(
       {
         _id: replyId
       },
       {
         $push: {
-          dislikes: user    //pushing the dislike.
+          dislikes: user //pushing the dislike.
         }
       }
     )

@@ -74,7 +74,7 @@ const profileSchema = new Schema(
         ref: 'Post',
         required: true
       }
-    ],
+    ]
   },
   {
     timestamps: true

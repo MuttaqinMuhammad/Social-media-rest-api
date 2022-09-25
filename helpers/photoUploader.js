@@ -1,5 +1,4 @@
 const multer = require('multer')
-// const path = require('path')
 
 const supportedFormats = ['image/jpeg', 'image/jpg', 'image/png']
 module.exports = multer({
