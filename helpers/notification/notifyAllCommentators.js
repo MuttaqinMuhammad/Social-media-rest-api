@@ -2,6 +2,10 @@ const User = require('../../models/User')
 const Notification = require('../../models/Notification')
 const Post = require('../../models/post/Post')
 
+/*
+Description: this function notifies all the commentators except the post author. thst "the author also commented on his post"
+*/
+
 const notifyAllCommentators = async (sender, source) =>
   new Promise((resolve, reject) => {
     const post = source
@@ -15,7 +19,7 @@ const notifyAllCommentators = async (sender, source) =>
         ) === index
     ) //array
     if (commentators.length <= 0) {
-      return
+      resolve(true)
     }
 
     try {

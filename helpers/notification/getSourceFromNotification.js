@@ -1,6 +1,9 @@
 const Notification = require('../../models/Notification')
 const Post = require('../../models/post/Post')
 
+/*
+Description:this function  populates the (post || comment || reply). and returns that.
+*/
 const populateFromReferance = async (Id, ref) => {
   const notification = await Notification.findOne({ _id: Id })
     .populate({

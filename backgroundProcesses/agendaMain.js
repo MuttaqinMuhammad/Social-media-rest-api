@@ -23,7 +23,7 @@ const agendaStart = async () => {
   try {
     await agenda.start()
     await agenda.every('1 minutes', 'clear-expired-Otp')
-    await agenda.every('1 minutes', 'clear-expired-stories')
+    await agenda.every('5 minutes', 'clear-expired-stories')
   } catch (e) {
     console.log(`agenda error: ${e}`)
   }

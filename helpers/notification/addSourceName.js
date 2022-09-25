@@ -1,3 +1,7 @@
+/*
+Description: this function takes the referance name and add that to the notification (text)
+*/
+
 module.exports = (ref) => {
   if (!ref) throw new Error('no ref found!')
   switch (ref.toUpperCase()) {

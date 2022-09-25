@@ -2,12 +2,16 @@ const Comment = require('../../models/post/Comment')
 const User = require('../../models/User')
 const Notification = require('../../models/Notification')
 
+/*
+Description: this function notifies the comment repliers. 
+*/
+
 module.exports = async (sender, source) =>
   new Promise((resolve, reject) => {
     const user = sender
     const comment = source
     if (comment.replies.length <= 0) {
-      return
+      resolve(true)
     }
 
     const replies = comment.replies.filter(

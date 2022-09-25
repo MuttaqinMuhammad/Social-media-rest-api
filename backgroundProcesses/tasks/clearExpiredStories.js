@@ -1,3 +1,7 @@
+/*
+Description: This function is called by agendaJS in every 24 hours. this function finds all the existing story in database. if an story is expired this function deletes the otp
+*/
+
 const Story = require('../../models/Storie')
 
 const clearExpiredStories = async (job) => {

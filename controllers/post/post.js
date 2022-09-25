@@ -6,6 +6,10 @@ const Profile = require('../../models/Profile')
 const Reply = require('../../models/post/Replie')
 const Notification = require('../../models/Notification')
 
+
+/*
+Description: this function takes a user id .search profile and returns all the user posts
+*/
 const getMyPosts = async (req, res, next) => {
   const myPostsArray = []
 
@@ -26,6 +30,9 @@ const getMyPosts = async (req, res, next) => {
     next(e)
   }
 }
+/*
+Description: this function takes a user id .search profile and returns all the user posts
+*/
 const getUserPosts = async (req, res, next) => {
   const userPostsArray = []
 
@@ -47,6 +54,11 @@ const getUserPosts = async (req, res, next) => {
   }
 }
 
+/*
+Description: this function takes caption and body from req.body and creates a  post.
+*/
+
+
 const createPost = async (req, res, next) => {
   const { caption, body } = req.body
   const post = new Post({
@@ -65,6 +77,7 @@ const createPost = async (req, res, next) => {
     }
 
     const newPost = await post.save()
+//pushing the post id in user profile .
     await Profile.updateOne(
       {
         user: req.user._id
@@ -83,7 +96,9 @@ const createPost = async (req, res, next) => {
     next(e)
   }
 }
-
+/*
+Description: this function edits user posts .
+*/
 const editPost = async (req, res, next) => {
   const { postId } = req.params
   const { caption, body } = req.body
@@ -103,6 +118,7 @@ const editPost = async (req, res, next) => {
         const result = await cloudinary.uploader.upload(req.file.path)
 
         const { secure_url, public_id } = result
+//updating the image.
         await Post.updateOne(
           { _id: postId },
           {
@@ -115,7 +131,7 @@ const editPost = async (req, res, next) => {
           }
         )
       }
-
+// updating the post caption and body
       const post = await Post.updateOne(
         {
           _id: postId
@@ -138,19 +154,23 @@ const editPost = async (req, res, next) => {
     next(e)
   }
 }
-
+/*
+Description: this function takes a post id and deletes the post
+*/
 const deletePost = async (req, res, next) => {
   try {
     const { postId } = req.params
     const post = await Post.findOne({
       _id: postId
     })
-
+//deleting post
     await Post.deleteOne({
       _id: postId,
       user: req.user._id
     })
+    //deleting post image
     await cloudinary.uploader.destroy(post.image.public_id)
+//removing the post id from user profile 
     await Profile.updateOne(
       {
         user: req.user._id
@@ -162,7 +182,11 @@ const deletePost = async (req, res, next) => {
       }
     )
 
-    Post.removeChilds(post)
+/*
+function name: removeChilds
+ Description: this function takes a single post Object and finds every comments and replies and delete those.
+*/
+Post.removeChilds(post)
 
     res.status(200).json({
       success: true,
@@ -176,6 +200,9 @@ const deletePost = async (req, res, next) => {
   }
 }
 
+/*
+Description: this function takes a postId form req.params and like that post if the user already liked the post this function removes the like.
+*/
 const like = async (req, res, next) => {
   try {
     const { postId } = req.params
@@ -243,7 +270,9 @@ const like = async (req, res, next) => {
     next(e)
   }
 }
-
+/*
+Description: this function takes a postId form req.params and dislike that post if the user already disliked the post this function removes the dislike.
+*/
 const dislike = async (req, res, next) => {
   try {
     const { postId } = req.params
@@ -303,6 +332,7 @@ const dislike = async (req, res, next) => {
   }
 }
 
+//exporting all he functions
 module.exports = {
   getMyPosts,
   getUserPosts,
