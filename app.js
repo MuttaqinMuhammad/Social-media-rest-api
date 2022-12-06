@@ -38,6 +38,7 @@ app.use('/notification', notificationRoute)
 app.use('/friend', friendRoute)
 
 //using error handleling middlewares
+
 app.use(errorhandlers)
 
 module.exports = server
