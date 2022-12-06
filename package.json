@@ -1,16 +1,15 @@
 {
   "name": "social-media-rest-api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=development nodemon server.js",
-    "prod": "NODE_ENV=production nodemon server.js"
+    "prod": "NODE_ENV=production node server.js"
   },
   "author": "Muttaqin Muhammad",
   "license": "ISC",
   "dependencies": {
-    "agenda": "4.3.0",
     "bcryptjs": "2.4.3",
     "cloudinary": "1.32.0",
     "config": "3.3.8",
@@ -29,6 +28,7 @@
     "socket.io": "4.5.2"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "morgan": "1.10.0",
     "nodemon": "2.0.20",
     "prettier": "2.7.1"
