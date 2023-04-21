@@ -1,24 +1,25 @@
-const { Schema, model } = require('mongoose')
+const { Schema, model } = require('mongoose');
 
 const otpSchema = new Schema(
   {
     otp: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     user: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
     },
     isValid: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  { timestamps: true }
-)
+  //expire this document after 10 minutes
+  { timestamps: true, expireAfterSeconds: 600 }
+);
 
-const Otp = new model('otp', otpSchema)
+const Otp = new model('otp', otpSchema);
 
-module.exports = Otp
+module.exports = Otp;
