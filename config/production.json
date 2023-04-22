@@ -1,6 +1,21 @@
 {
+  "cloudinary": {
+    "CLOUD_NAME": "CLOUD_NAME",
+    "API_KEY": "API_KEY",
+    "API_SECRET": "API_SECRET"
+  },
+  "nodemailer": {
+    "SMTP_EMAIL": "SMTP_EMAIL",
+    "SMTP_PASSWORD": "SMTP_PASSWORD"
+  },
+  "googleAuth": {
+    "googleClientId": "GOOGLE_CLIENT_ID",
+    "googleClientSecret": "GOOGLE_CLIENT_SECRET",
+    "callbackUrl": "CALLBACK_URL"
+  },
+
   "port": 6000,
-  "MONGO_URI":"mongodb://localhost:27017/social_media_app",
+  "MONGO_URI": "MONGO_URI",
   "PASSWORD_SALT": "",
   "COOKIE_SECRET_KEY": "",
   "AUTH_COOKIE_NAME": "",
