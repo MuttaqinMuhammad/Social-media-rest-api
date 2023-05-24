@@ -1,6 +1,4 @@
-const User = require('../models/User');
 const Profile = require('../models/Profile');
-const OTP = require('../models/OTP');
 const config = require('config');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -16,6 +14,7 @@ const {
   BadRequestError,
   NotFoundError,
   UnauthorizationError,
+  ForbiddenError,
 } = require('../helpers/ApiError');
 
 const sendOtp = async (req, res, next) => {
@@ -48,7 +47,7 @@ const sendOtp = async (req, res, next) => {
     });
     //redirect validate otp
     res
-      .status(204)
+      .status(202)
       .cookie('validate-otp', payload, {
         httpOnly: true,
         signed: true,
@@ -72,31 +71,25 @@ const validateOtp = async (req, res, next) => {
     Object.keys(req.signedCookies).length > 0 ? req.signedCookies : false;
   const cookie = cookies['validate-otp'] ? cookies['validate-otp'] : false;
   try {
-    if (cookie && otp) {
-      const decoded = jwt.verify(cookie, JWT_SECRET_KEY);
-      const { userId } = decoded;
-      const dataOtp = await OTP.findOne({ user: userId });
+    if (cookie && otp) throw new ForbiddenError('Access denied');
+    const decoded = jwt.verify(cookie, JWT_SECRET_KEY);
+    const { userId } = decoded;
+    const dataOtp = await OTP.findOne({ user: userId });
 
-      if (dataOtp.otp === otp) {
-        await OTP.updateOne(
-          { _id: dataOtp._id },
-          {
-            $set: {
-              isValid: true,
-            },
-          }
-        );
-
-        //redirect create a new password route
-        return res.status(204).json({
-          success: true,
-        });
-      } else {
-        throw new Error('invalid otp');
+    if (dataOtp.otp === otp) throw new UnauthorizationError('Invalid otp.');
+    await OTP.updateOne(
+      { _id: dataOtp._id },
+      {
+        $set: {
+          isValid: true,
+        },
       }
-    } else {
-      throw new Error('access denied!');
-    }
+    );
+
+    //redirect create a new password route
+    return res.status(204).json({
+      success: true,
+    });
   } catch (e) {
     next(e);
   }
@@ -118,7 +111,7 @@ const signup = async (req, res, next) => {
       gender,
     });
     user.password = null;
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       user,
     });
@@ -201,7 +194,7 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res) => {
   res.clearCookie(AUTH_COOKIE_NAME);
-  res.status(200).json({
+  res.status(204).json({
     success: true,
     message: 'log out successful!',
   });
@@ -230,7 +223,7 @@ const changePasswordWithOtp = async (req, res, next) => {
         },
       }
     );
-    res.status(200).clearCookie('validate-otp').json({
+    res.status(204).clearCookie('validate-otp').json({
       success: true,
     });
   } catch (e) {
@@ -263,4 +256,6 @@ module.exports = {
   logout,
   changePasswordWithOtp,
   deleteAccount,
+  validateOtp,
+  sendOtp,
 };
