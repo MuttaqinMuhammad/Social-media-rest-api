@@ -5,7 +5,7 @@ const errorHandler = (err, req, res, next) => {
   return res.status(500).json('Something went wrong');
 };
 
-const notFound = (_, _, next) => {
+const notFound = (req, res, next) => {
   next(new NotFoundError());
 };
 

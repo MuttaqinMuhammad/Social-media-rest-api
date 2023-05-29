@@ -16,6 +16,8 @@ const {
   logout,
   changePasswordWithOtp,
   deleteAccount,
+  validateOtp,
+  sendOtp,
 } = require('../controllers/user');
 
 router.post('/signup', signupvalidator, validationResult, signup);

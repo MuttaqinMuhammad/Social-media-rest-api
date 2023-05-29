@@ -1,6 +1,6 @@
 const Profile = require('../models/Profile');
 const User = require('../models/User');
-const cloudinary = require('../helpers/cloudinary');
+const cloudinary = require('../config/cloudinary');
 const { ForbiddenError } = require('../helpers/ApiError');
 
 const getUserProfile = async (req, res, next) => {
